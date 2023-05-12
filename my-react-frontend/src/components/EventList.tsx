@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import EventComponent from "./EventComponent";
 import EventItem from "../types/EventInterface";
-import ReactPaginate from "react-paginate";
+import React from "react";
 
 function EventList() {
 	const [getEvents, setEvents] = useState<Array<EventItem>>([]);
@@ -39,17 +39,6 @@ function EventList() {
 						.map((event) => <EventComponent key={event.id} event={event} />)
 				)}
 			</div>
-			<ReactPaginate
-				breakLabel="..."
-				nextLabel="next "
-				pageCount={Math.ceil(getEvents.length / perPage)}
-				pageRangeDisplayed={5}
-				marginPagesDisplayed={5}
-				onPageChange={handlePageChange}
-				containerClassName="pagination"
-				activeClassName="active"
-				renderOnZeroPageCount={null}
-			/>
 		</div>
 	);
 }

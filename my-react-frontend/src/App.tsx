@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import EventList from "./components/EventList";
 import "./index.css";
+import React from "react";
 
 function App() {
 	return (

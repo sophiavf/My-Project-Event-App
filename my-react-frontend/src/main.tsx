@@ -1,12 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-
-import "./mocks/browser.js";
+import "./index.css"
+import App from './App';
 
 const root = ReactDOM.createRoot(
-	document.getElementById("root") as HTMLElement
+	document.getElementById("app") as HTMLElement
 );
 root.render(
 	<React.StrictMode>
