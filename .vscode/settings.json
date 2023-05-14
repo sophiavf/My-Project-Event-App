@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "eventbrite",
-        "testid"
+        "eventref",
+        "testid",
+        "textid"
     ],
     // settings.json
     "javascript.format.enable": false,
