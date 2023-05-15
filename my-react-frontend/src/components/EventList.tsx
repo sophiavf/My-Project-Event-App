@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
 import EventComponent from "./EventComponent";
-import EventItem from "../types/EventInterface";
+import Event from "../types/EventInterface";
 import React from "react";
+import db from "../db";
 
 function EventList() {
-	const [getEvents, setEvents] = useState<Array<EventItem>>([]);
+	const [getEvents, setEvents] = useState<Array<Event>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [perPage] = useState<number>(10);
-	const [currentPage, setCurrentPage] = useState<number>(0);
-
 	useEffect(() => {
 		//https://www.freecodecamp.org/news/how-to-consume-rest-apis-in-react/
 		const fetchEvents = async () => {
+			// try {
+			// 	const response = await fetch("/api/events");
+			// 	const data: Event[] = await response.json();
+			// 	setEvents(data);
+			// 	setLoading(false);
+			// } catch (error) {
+			// 	console.log(error);
+			// }
+
 			try {
-				const response = await fetch("/api/events");
-				const data: EventItem[] = await response.json();
+				const response = await db.collection("events").get();
+				const data: Event[] = await response.json();
 				setEvents(data);
 				setLoading(false);
 			} catch (error) {
@@ -24,19 +31,15 @@ function EventList() {
 		fetchEvents();
 	}, []);
 
-	function handlePageChange(selectedPage: { selected: number }) {
-		setCurrentPage(selectedPage.selected);
-	}
-
 	return (
 		<div className="flex flex-col items-center justify-center">
 			<div className="flex flex-col content-center">
 				{loading ? (
 					<p>Loading...</p>
 				) : (
-					getEvents
-						.slice(currentPage * perPage, (currentPage + 1) * perPage)
-						.map((event) => <EventComponent key={event.id} event={event} />)
+					getEvents.map((event) => (
+						<EventComponent key={event.id} event={event} />
+					))
 				)}
 			</div>
 		</div>

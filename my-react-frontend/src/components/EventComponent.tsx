@@ -1,9 +1,10 @@
-import EventItem from "../types/EventInterface";
+import Event from "../types/EventInterface";
 import meetupLogo from "../assets/meetup-logo.png";
 import eventbriteLogo from "../assets/eventbrite-logo.png";
+import React from "react";
 
 interface EventCardProps {
-	event: EventItem;
+	event: Event;
 }
 
 //function formatDate(dateData: Date) {}
@@ -50,7 +51,11 @@ export default function EventComponent({ event }: EventCardProps) {
 						className="self-center flex justify-center w-1/2 md:w-auto"
 					/>
 				)}
-				<img src={event.image} alt="Event" className=" rounded-lg w-1/2 md:w-auto" />
+				<img
+					src={event.image}
+					alt="Event"
+					className=" rounded-lg w-1/2 md:w-auto"
+				/>
 			</div>
 		</div>
 	);
