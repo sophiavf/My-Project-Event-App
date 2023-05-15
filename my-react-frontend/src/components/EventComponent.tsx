@@ -18,7 +18,7 @@ export default function EventComponent({ event }: EventCardProps) {
 			<div className="flex flex-col justify-between flex-wrap gap-2 place-self-stretch md:w-2/3">
 				<div className="text-lg text-neutral2">{event.name}</div>
 				<div className="text-secondary text-sm">
-					{event.dateTime}, {event.location}
+					{event.dateTime.toString()}, {event.location} 
 				</div>
 				{event.summary && (
 					<p className="text-neutral2 text-xs">{event.summary}</p>

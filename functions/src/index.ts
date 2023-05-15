@@ -1,27 +1,12 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+// Init cloud Firestore
+import { initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
-// import { onRequest } from "firebase-functions/v2/https";
-// import * as logger from "firebase-functions/logger";
+initializeApp();
+const db = getFirestore();
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
-import * as admin from "firebase-admin";
+//Import firebase functions
 import * as functions from "firebase-functions";
-admin.initializeApp();
-const firestore = admin.firestore();
 
 import cleanupOldEvents from "./cleanup";
 import updateDatabase from "./update";
@@ -41,18 +26,19 @@ exports.cleanup = functions.pubsub
 	.schedule("00***")
 	.timeZone(tZone)
 	.onRun((context) => {
-		return cleanupOldEvents(firestore);
+		return cleanupOldEvents(db);
 	});
 
 exports.meetupScraper = functions.pubsub
 	.schedule("01***")
 	.onRun(async (context) => {
 		const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
-		updateDatabase(events, firestore);
+		updateDatabase(events, db);
 	});
 
 exports.meetupScraper = functions.pubsub
 	.schedule("02***")
 	.onRun(async (context) => {
 		const events = await runScraper(eventbriteUrl, scrapeEventbrite);
+		updateDatabase(events, db);
 	});

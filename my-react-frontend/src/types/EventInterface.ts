@@ -6,8 +6,8 @@ export default interface Event {
 	writeTimestamp: Date;
 	eventPlatform: string;
 	name: string;
-	eventLink: Date;
-	dateTime: string;
+	eventLink: string;
+	dateTime: Date;
 	location: string;
 	summary?: string;
 	image: string;

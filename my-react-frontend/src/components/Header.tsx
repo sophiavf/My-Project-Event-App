@@ -1,3 +1,4 @@
+import React from "react";
 import icon from "../assets/shaking-hands.png";
 export default function Header() {
 	return (
