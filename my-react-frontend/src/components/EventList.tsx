@@ -20,8 +20,12 @@ function EventList() {
 			// }
 
 			try {
-				const response = await db.collection("events").get();
-				const data: Event[] = await response.json();
+				const eventsSnapshot = await db.collection("events").get();
+				const data: Event[] = [];
+				eventsSnapshot.forEach((doc) => {
+					data.push(doc.data() as Event);
+				});
+
 				setEvents(data);
 				setLoading(false);
 			} catch (error) {
