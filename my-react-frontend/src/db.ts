@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-initializeApp();
+const app = initializeApp();
 
-const db = getFirestore();
+const db = getFirestore(app);
 
 export default db;
