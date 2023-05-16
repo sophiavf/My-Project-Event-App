@@ -12,7 +12,7 @@ export default async function updateDatabase(
 	}
 
 	try {
-		await batch.commit;
+		await batch.commit();
 		console.log("Batch write to Firestore successful");
 	} catch (error) {
 		console.error("Error writing batch to Firestore: ", error);
