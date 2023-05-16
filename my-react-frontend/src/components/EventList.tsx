@@ -7,6 +7,7 @@ import db from "../db";
 function EventList() {
 	const [getEvents, setEvents] = useState<Array<Event>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [isEmpty, setIsEmpty] = useState<boolean>(true);
 	useEffect(() => {
 		//https://www.freecodecamp.org/news/how-to-consume-rest-apis-in-react/
 		const fetchEvents = async () => {
@@ -20,14 +21,18 @@ function EventList() {
 			// }
 
 			try {
-				const eventsSnapshot = await db.collection("events").get();
-				const data: Event[] = [];
+				const eventsRef = db.collection("events");
+				const eventsSnapshot = await eventsRef.get();
+				const eventsData: Event[] = [];
 				eventsSnapshot.forEach((doc) => {
-					data.push(doc.data() as Event);
+					const data = doc.data();
+					data.push(data);
 				});
-
-				setEvents(data);
+				setEvents(eventsData);
 				setLoading(false);
+				if (getEvents === null) {
+					setIsEmpty(false);
+				}
 			} catch (error) {
 				console.log(error);
 			}
@@ -38,7 +43,7 @@ function EventList() {
 	return (
 		<div className="flex flex-col items-center justify-center">
 			<div className="flex flex-col content-center">
-				{loading ? (
+				{loading || isEmpty ? (
 					<p>Loading...</p>
 				) : (
 					getEvents.map((event) => (
