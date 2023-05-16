@@ -4,7 +4,6 @@ module.exports = {
 		es6: true,
 		node: true,
 	},
-
 	extends: [
 		"eslint:recommended",
 		"plugin:import/errors",
@@ -27,5 +26,7 @@ module.exports = {
 		"import/no-unresolved": 0,
 		indent: ["off"],
 		"no-constant-condition": ["off"],
+		"no-tabs": ["off"],
+		"quote-props": ["off"],
 	},
 };

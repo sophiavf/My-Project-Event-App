@@ -1,4 +1,9 @@
-// Init cloud Firestore
+// The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
+// import { logger } from "firebase-functions";
+// import { onRequest } from "firebase-functions/v2/https";
+// import { onDocumentCreated } from "firebase-functions/v2/firestore";
+
+// The Firebase Admin SDK to access Firestore.
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -7,6 +12,7 @@ const db = getFirestore();
 
 //Import firebase functions
 import * as functions from "firebase-functions";
+import { logger } from "firebase-functions";
 
 import cleanupOldEvents from "./cleanup";
 import updateDatabase from "./update";
@@ -26,7 +32,8 @@ exports.cleanup = functions.pubsub
 	.schedule("00***")
 	.timeZone(tZone)
 	.onRun((context) => {
-		return cleanupOldEvents(db);
+		cleanupOldEvents(db);
+		logger.log("Event cleanup finished");
 	});
 
 exports.meetupScraper = functions.pubsub
@@ -34,11 +41,13 @@ exports.meetupScraper = functions.pubsub
 	.onRun(async (context) => {
 		const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
 		updateDatabase(events, db);
+		logger.log("Event meetup data update finished");
 	});
 
-exports.meetupScraper = functions.pubsub
+exports.eventbriteScraper = functions.pubsub
 	.schedule("02***")
 	.onRun(async (context) => {
 		const events = await runScraper(eventbriteUrl, scrapeEventbrite);
 		updateDatabase(events, db);
+		logger.log("Event eventbrite data update finished");
 	});
