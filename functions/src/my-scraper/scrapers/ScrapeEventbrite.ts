@@ -1,6 +1,8 @@
 import { Page } from "playwright";
 import Event from "../../types/Event";
 
+import { Timestamp } from "firebase-admin/firestore";
+
 import { MIN_DELAY, MAX_DELAY, delay } from "../index";
 
 export default async function scrapeEventbrite(page: Page): Promise<Event[]> {
@@ -13,7 +15,7 @@ export default async function scrapeEventbrite(page: Page): Promise<Event[]> {
 			return events.map((event) => {
 				const id = Number(event.getAttribute("data-event-id"));
 				const name = String(event.querySelector("h2"));
-				const writeTimestamp = new Date();
+				const writeTimestamp = Timestamp.fromDate(new Date());
 				const eventPlatform = "Eventbrite";
 				const eventLink = String(
 					event.querySelector("a.event-card-link")?.getAttribute("href")
@@ -45,6 +47,7 @@ export default async function scrapeEventbrite(page: Page): Promise<Event[]> {
 		});
 		const nextPageButton = await page.$("li[data-spec='page-next-wrapper']");
         const classAttribute = await nextPageButton?.getAttribute("class");
+		//if the next page button is disabled, the @hasNextPage button is set to false 
         hasNextPage = !(classAttribute?.includes("eds-pagination__navigation-page--is-disabled"));
 	}
 

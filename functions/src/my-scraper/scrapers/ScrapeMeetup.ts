@@ -2,6 +2,7 @@ import { Page } from "playwright";
 import Event from "../../types/Event";
 
 import { MIN_DELAY, MAX_DELAY, delay } from "../index";
+import { Timestamp } from "firebase-admin/firestore";
 
 async function scrollToBottom(page: Page) {
 	let previousHeight = await page.evaluate(() => document.body.scrollHeight);
@@ -66,7 +67,7 @@ async function scrapeMeetup(page: Page): Promise<Event[]> {
 
 	return eventData.map((event) => ({
 		id: event.id,
-		writeTimestamp: new Date(),
+		writeTimestamp: Timestamp.fromDate(new Date()),
 		eventPlatform: "Meetup",
 		name: event.name,
 		eventLink: event.eventLink,

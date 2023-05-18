@@ -1,6 +1,9 @@
+import { Timestamp } from "firebase-admin/firestore";
+
+Timestamp
 interface Event {
 	id: number;
-	writeTimestamp: Date;
+	writeTimestamp: Timestamp;
 	eventPlatform: string;
 	name: string;
 	eventLink: string;
@@ -9,5 +12,7 @@ interface Event {
 	summary?: string;
 	image: string;
 }
+
+
 
 export default Event
