@@ -16,7 +16,13 @@ export default async function runScraper(
 	callBack: (page: Page) => Promise<Event[]>
 ): Promise<Event[]> {
 	const browser = await chromium.launch();
-	const page = await browser.newPage();
+	//Prevents the site from blocking requests 
+	const context = await browser.newContext({
+		userAgent:
+			"Mozilla/5.0 (Windows NT 10.0; Win64; x64)" +
+			" AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+	});
+	const page = await context.newPage();
 	await page.goto(url);
 
 	const events: Event[] = await callBack(page);
