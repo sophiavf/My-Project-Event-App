@@ -7,3 +7,10 @@ typings/
 
 # Node.js dependency directory
 node_modules/
+
+
+# Sensitive data
+service-account.json
+/test-results/
+/playwright-report/
+/playwright/.cache/
