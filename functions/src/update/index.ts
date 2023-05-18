@@ -1,8 +1,9 @@
+import { Firestore } from "firebase-admin/firestore";
 import Event from "../types/Event";
 
 export default async function updateDatabase(
 	events: Event[],
-	db: FirebaseFirestore.Firestore
+	db: Firestore
 ) {
 	const batch = db.batch();
 
