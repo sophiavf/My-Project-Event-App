@@ -1,6 +1,5 @@
 import { Timestamp } from "firebase-admin/firestore";
 
-Timestamp
 interface Event {
 	id: number;
 	writeTimestamp: Timestamp;

@@ -3,7 +3,7 @@ import Event from "../../types/Event";
 
 import { Timestamp } from "firebase-admin/firestore";
 
-import { MIN_DELAY, MAX_DELAY, delay } from "../index";
+import { randomDelay } from "../index";
 
 export default async function scrapeEventbrite(page: Page): Promise<Event[]> {
 	let hasNextPage = true;
@@ -12,7 +12,7 @@ export default async function scrapeEventbrite(page: Page): Promise<Event[]> {
 
 	while (hasNextPage) {
 		// gets all the event elements containing event card on the page.
-		const eventElements = await page.$$("section.event-card-details");
+		const eventElements = await page.$$("section.discover-horizontal-event-card");
 		// Then, for each element, get the event data.
 		const eventsOnPagePromise = eventElements.map((eventElement) =>
 			getEventData(eventElement, page)
@@ -79,17 +79,22 @@ async function getEventData(
 	};
 }
 async function getEventSummary(eventLink: string, page: Page) {
-	if (eventLink) {
+	try { 
+		if (eventLink) {		
 		await page.goto(eventLink);
-		await delay(Math.random() * (MAX_DELAY - MIN_DELAY) + MIN_DELAY);
+		
+		await randomDelay();
 		const summaryElement = await page.$("p.summary");
 		const summary = summaryElement
 			? await summaryElement.textContent()
 			: "Summary not available";
 		await page.goBack();
-		return summary?.trim();
+		return summary?.trim(); }
+	} catch (error) {
+		console.error(`Failed to get ${eventLink}: `, error);
+
 	}
-}
+} 
 
 async function goToNextPage(page: Page) {
 	const nextPageButton = await page.$("li[data-spec='page-next-wrapper']");
