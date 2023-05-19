@@ -21,11 +21,12 @@ test.beforeAll(async () => {
 	const browser = await chromium.launch();
 	const context = await browser.newContext();
 	page = await context.newPage();
+	
 });
 
-test.afterAll(async () => {
-	await page.close();
-});
+// test.afterAll(async () => {
+// 	await page.close();
+// });
 
 test.beforeEach(async () => {
 	await page.goto(eventbriteUrl);
@@ -40,7 +41,7 @@ test("scrapeEventbrite function", async () => {
 });
 
 test("getEventData function", async () => {
-	const eventElement = await page.$("div.Container_root_5l5cp"); // Fetch one event element
+	const eventElement = await page.$("section.discover-horizontal-event-card"); // Fetch one event element
 	if (eventElement) {
 		const event = await getEventData(eventElement, page);
 		expect(event).toHaveProperty("id");
