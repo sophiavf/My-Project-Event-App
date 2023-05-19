@@ -61,3 +61,14 @@ test("getEvents should return valid Event objects", async () => {
 		expect(event).toHaveProperty("name");
 	}
 });
+
+// Test for the goToNextPage function
+test("goToNextPage should navigate to the next page", async () => {
+	await page.goto(eventbriteUrl);
+	const initialUrl = page.url();
+	const hasNextPage = await goToNextPage(page);
+	const newUrl = page.url();
+
+	expect(hasNextPage).toBe(true);
+	expect(initialUrl).not.toBe(newUrl);
+});

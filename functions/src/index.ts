@@ -6,7 +6,6 @@ initializeApp();
 const db = getFirestore();
 
 //Import firebase functions
-import * as functions from "firebase-functions";
 import { logger } from "firebase-functions";
 
 import cleanupOldEvents from "./cleanup";
@@ -23,18 +22,18 @@ const meetupUrl =
 const eventbriteUrl =
 	"https://www.eventbrite.com/d/germany--m%C3%BCnchen/free--science-and-tech--events/?ang=en";
 
-exports.cleanupEvents = onSchedule("every day 00:00", async (event) => {
+exports.cleanupEvents = onSchedule("every day 00:00", async () => {
 	await cleanupOldEvents(db);
 	logger.log("Event cleanup finished");
 });
 
-exports.meetupScraper = onSchedule("every day 01:00", async (event) => {
+exports.meetupScraper = onSchedule("every day 01:00", async () => {
 	const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
 	updateDatabase(events, db);
 	logger.log("Event meetup data update finished");
 });
 
-exports.eventbriteScraper = onSchedule("every day 02:00", async (event) => {
+exports.eventbriteScraper = onSchedule("every day 02:00", async () => {
 	const events = await runScraper(eventbriteUrl, scrapeEventbrite);
 	updateDatabase(events, db);
 	logger.log("Event eventbrite data update finished");

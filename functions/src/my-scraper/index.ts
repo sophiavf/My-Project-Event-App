@@ -2,8 +2,8 @@ import { chromium, Page } from "playwright";
 
 import Event from "../types/Event.js";
 
-const MIN_DELAY = 2; // minimum delay between requests in seconds
-const MAX_DELAY = 5; // maximum delay between requests in seconds
+const MIN_DELAY = 1; // minimum delay between requests in seconds
+const MAX_DELAY = 4; // maximum delay between requests in seconds
 
 async function randomDelay() {
 	const delay = Math.floor(
