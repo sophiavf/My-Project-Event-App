@@ -1,24 +1,22 @@
-{
-	"events": [
-		{
-			"id": "1",
-			"name": "Test Event 1",
-			"link": "https://example.com/test-event-1",
-			"start_date": "2023-12-01",
-			"start_time": "10:00",
-			"primary_venue": { "name": "Test Venue 1" },
-			"summary": "This is a test event.",
-			"image": { "url": "https://example.com/test-event-1.jpg" }
-		},
-		{
-			"id": "2",
-			"name": "Test Event 2",
-			"link": "https://example.com/test-event-2",
-			"start_date": "2023-12-02",
-			"start_time": "11:00",
-			"primary_venue": { "name": "Test Venue 2" },
-			"summary": "This is another test event.",
-			"image": { "url": "https://example.com/test-event-2.jpg" }
-		}
-	]
-}
+[
+	{
+		"id": "1",
+		"name": "Test Event 1",
+		"link": "https://example.com/test-event-1",
+		"start_date": "2023-12-01",
+		"start_time": "10:00",
+		"primary_venue": { "name": "Test Venue 1" },
+		"summary": "This is a test event.",
+		"image": { "url": "https://example.com/test-event-1.jpg" }
+	},
+	{
+		"id": "2",
+		"name": "Test Event 2",
+		"link": "https://example.com/test-event-2",
+		"start_date": "2023-12-02",
+		"start_time": "11:00",
+		"primary_venue": { "name": "Test Venue 2" },
+		"summary": "This is another test event.",
+		"image": { "url": "https://example.com/test-event-2.jpg" }
+	}
+]

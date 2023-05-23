@@ -14,7 +14,7 @@ async function randomDelay() {
 
 export default async function runScraper(
 	url: string,
-	callBack: (page: Page) => Promise<Event[]>
+	callBack: (page: Page, url: string) => Promise<Event[]>
 ): Promise<Event[]> {
 	const browser = await chromium.launch();
 	//Prevents the site from blocking requests
@@ -23,11 +23,11 @@ export default async function runScraper(
 			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
 	});
 	const page = await context.newPage();
-	await page.goto(url);
+
 	let events: Event[] = [];
 
 	try {
-		events = await callBack(page);
+		events = await callBack(page, url);
 	} catch (error) {
 		console.error("An error occurred while calling back the page:", error);
 	}

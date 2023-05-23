@@ -1,7 +1,7 @@
 import { Page } from "playwright";
 import Event from "../../types/Event";
 
-import { MIN_DELAY, MAX_DELAY, delay } from "../index";
+import { randomDelay } from "../index";
 import { Timestamp } from "firebase-admin/firestore";
 
 async function scrollToBottom(page: Page) {
@@ -23,7 +23,7 @@ async function scrollToBottom(page: Page) {
 }
 
 // Scrape events
-async function scrapeMeetup(page: Page): Promise<Event[]> {
+async function scrapeMeetup(page: Page, url: string): Promise<Event[]> {
 	// scroll to bottom of page using function above to ensure all available data is loaded
 
 	await scrollToBottom(page);
@@ -101,7 +101,7 @@ async function scrapeEventLocation(
 			event.location = location;
 
 			// creates a random delay before the next iteration in the for loop is run
-			await delay(Math.random() * (MAX_DELAY - MIN_DELAY) + MIN_DELAY);
+			await randomDelay();
 		}
 	}
 	return eventData;

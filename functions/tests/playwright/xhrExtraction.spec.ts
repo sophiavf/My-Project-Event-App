@@ -2,8 +2,8 @@ import {
 	getEvents,
 	goToNextPage,
 	processEvents,
-} from "../../src/my-scraper/scrapers/eventbriteXHR"; // make sure to replace this with the correct path
-import { test, expect, chromium, Page } from "@playwright/test";
+} from "../../src/my-scraper/scrapers/eventbriteXHR";
+import { test, expect, chromium, Page, Browser } from "@playwright/test";
 import { eventbriteUrl } from "../../src/index";
 
 import * as data from "../eventData.json";
@@ -17,9 +17,11 @@ test.use({
 });
 
 let page: Page;
+let browser: Browser;
+let context;
 test.beforeAll(async () => {
-	const browser = await chromium.launch();
-	const context = await browser.newContext();
+	browser = await chromium.launch();
+	context = await browser.newContext();
 	page = await context.newPage();
 });
 
@@ -27,15 +29,16 @@ test.beforeAll(async () => {
 // 	await page.close();
 // });
 
-test.beforeEach(async () => {
-	await page.goto(eventbriteUrl);
-});
+// test.beforeEach(async () => {
+
+// });
 test("Page is opened", async () => {
+	
 	expect(await page.url()).toBe(eventbriteUrl);
 });
 
 test("getEvents returns an array", async () => {
-	const events = await getEvents(page);
+	const events = await getEvents(page, eventbriteUrl);
 	console.log(events);
 	expect(Array.isArray(events)).toBe(true);
 });
@@ -53,8 +56,7 @@ test("processEvents returns an array", () => {
 
 // Test for the getEvents function
 test("getEvents should return valid Event objects", async () => {
-	await page.goto(eventbriteUrl);
-	const events = await getEvents(page);
+	const events = await getEvents(page, eventbriteUrl);
 	for (const event of events) {
 		// Add your validations here, for example:
 		expect(event).toHaveProperty("id");
@@ -64,11 +66,16 @@ test("getEvents should return valid Event objects", async () => {
 
 // Test for the goToNextPage function
 test("goToNextPage should navigate to the next page", async () => {
-	await page.goto(eventbriteUrl);
 	const initialUrl = page.url();
 	const hasNextPage = await goToNextPage(page);
 	const newUrl = page.url();
 
 	expect(hasNextPage).toBe(true);
 	expect(initialUrl).not.toBe(newUrl);
+});
+
+test("getEvents returns an array with no duplicates", async () => {
+	const events = await getEvents(page, eventbriteUrl);
+	const eventsSet = new Set(events);
+	expect(events.length).toBe(eventsSet.size);
 });

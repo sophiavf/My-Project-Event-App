@@ -5,7 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 
 import { randomDelay } from "../index";
 
-export default async function scrapeEventbrite(page: Page): Promise<Event[]> {
+export default async function scrapeEventbrite(page: Page, url: string): Promise<Event[]> {
 	let hasNextPage = true;
 
 	const eventCards: Event[] = [];
