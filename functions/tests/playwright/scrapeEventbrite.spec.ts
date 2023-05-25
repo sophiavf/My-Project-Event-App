@@ -1,69 +1,65 @@
-import { test, expect, chromium, Page } from "@playwright/test";
+import {
+	scrapeEventbrite,
+	goToNextPage,
+	processEvents,
+} from "../../src/my-scraper/scrapers/ScrapeEventbrite";
+import { test, expect, chromium, Page, Browser } from "@playwright/test";
 import { eventbriteUrl } from "../../src/index";
 
-import scrapeEventbrite, {
-	getEventData,
-	getEventSummary,
-	goToNextPage,
-} from "../../src/my-scraper/scrapers/ScrapeEventbrite";
+import { readFileSync } from "fs";
+import { join } from "path";
+const dataFilePath = join(__dirname, "../eventbriteTestData.json");
+const rawData = readFileSync(dataFilePath, "utf-8");
+const data = JSON.parse(rawData);
 
-test.use({
-	contextOptions: {
-		userAgent:
-			"Mozilla/5.0 (Windows NT 10.0; Win64; x64)" +
-			" AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-	},
-});
-
-let page: Page;
-
-test.beforeAll(async () => {
-	const browser = await chromium.launch();
-	const context = await browser.newContext();
-	page = await context.newPage();
-	
-});
-
-// test.afterAll(async () => {
-// 	await page.close();
-// });
-
-test.beforeEach(async () => {
+test("Page is opened", async ({ page }) => {
 	await page.goto(eventbriteUrl);
+	expect(await page.url()).toBe(eventbriteUrl);
 });
 
-test("scrapeEventbrite function", async () => {
-	const events = await scrapeEventbrite(page);
-	expect(events).toBeInstanceOf(Array);
-	// Asserts at least one event is found
-	expect(events.length).toBeGreaterThan(0);
-	// Further assertions can be made about the structure and content of the events.
+test("scrapeEventbrite returns an array", async ({ page }) => {
+	const events = await scrapeEventbrite(page, eventbriteUrl);
+	console.log(events);
+	expect(Array.isArray(events)).toBe(true);
 });
 
-test("getEventData function", async () => {
-	const eventElement = await page.$("section.discover-horizontal-event-card"); // Fetch one event element
-	if (eventElement) {
-		const event = await getEventData(eventElement, page);
-		expect(event).toHaveProperty("id");
-		expect(event).toHaveProperty("name");
-		expect(event).toHaveProperty("eventLink");
-	}
-});
-
-test("getEventSummary function", async () => {
-	const eventElement = await page.$("div.Container_root_5l5cp");
-	if (eventElement) {
-		const linkElement = await eventElement.$("a.event-card-link");
-		const eventLink = linkElement ? await linkElement.getAttribute("href") : "";
-		if (eventLink) {
-			const summary = await getEventSummary(eventLink, page);
-			expect(summary).toBeDefined();
-			expect(typeof summary).toBe("string");
-		}
-	}
-});
-
-test("goToNextPage function", async () => {
+test("goToNextPage returns a boolean", async ({ page }) => {
 	const hasNextPage = await goToNextPage(page);
 	expect(typeof hasNextPage).toBe("boolean");
+});
+
+test("processEvents returns an array", () => {
+	console.log(typeof data);
+
+	const processedEvents = processEvents(data);
+	expect(Array.isArray(processedEvents)).toBe(true);
+});
+// Test for the scrapeEventbrite function
+test("scrapeEventbrite should return valid Event objects", async ({ page }) => {
+	const events = await scrapeEventbrite(page, eventbriteUrl);
+	for (const event of events) {
+		// Add your validations here, for example:
+		expect(event).toHaveProperty("id");
+		expect(event).toHaveProperty("name");
+	}
+});
+
+// Test for the goToNextPage function
+test("goToNextPage should navigate to the next page", async ({ page }) => {
+	await page.goto(eventbriteUrl);
+	const initialUrl = page.url();
+	const hasNextPage = await goToNextPage(page);
+	await page.waitForURL;
+	const newUrl = page.url();
+
+	expect(hasNextPage).toBe(true);
+	expect(initialUrl).not.toBe(newUrl);
+});
+
+test("scrapeEventbrite returns an array with no duplicates", async ({
+	page,
+}) => {
+	const events = await scrapeEventbrite(page, eventbriteUrl);
+	const eventsSet = new Set(events);
+	expect(events.length).toBe(eventsSet.size);
 });

@@ -9,6 +9,7 @@ interface Event {
 	dateTime: Date;
 	location: string;
 	summary?: string;
+	organizer: string; 
 	image: string;
 }
 

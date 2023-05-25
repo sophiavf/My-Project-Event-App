@@ -11,8 +11,8 @@ import { logger } from "firebase-functions";
 import cleanupOldEvents from "./cleanup";
 import updateDatabase from "./update";
 import runScraper from "./my-scraper";
-import scrapeMeetup from "./my-scraper/scrapers/ScrapeMeetup";
-import scrapeEventbrite from "./my-scraper/scrapers/ScrapeEventbrite";
+import { scrapeMeetup } from "./my-scraper/scrapers/ScrapeMeetup";
+import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
 
 import Event from "./types/Event";
 import { onSchedule } from "firebase-functions/v2/scheduler";

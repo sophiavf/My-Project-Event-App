@@ -9,7 +9,7 @@ async function scrollToBottom(page: Page) {
 	let newHeight;
 
 	while (true) {
-		await page.evaluate("window.scrollTo(0, document.body.scrollHeight");
+		await page.evaluate("window.scrollTo(0, document.body.scrollHeight)");
 		await page.waitForTimeout(1000);
 
 		newHeight = await page.evaluate(() => document.body.scrollHeight);
@@ -24,46 +24,36 @@ async function scrollToBottom(page: Page) {
 
 // Scrape events
 async function scrapeMeetup(page: Page, url: string): Promise<Event[]> {
+	page.goto(url, { waitUntil: "networkidle" });
 	// scroll to bottom of page using function above to ensure all available data is loaded
-
 	await scrollToBottom(page);
 
 	// The method runs document.querySelectorAll within the page
-	let eventData = await page.$$eval(
+	const eventData = await page.$$eval(
 		"div[data-testid='categoryResults-eventCard']",
-		(events) => {
-			return events.map((event) => {
-				const id = Number(event.getAttribute("data-eventref"));
-				const name = String(event.querySelector("h2")?.textContent || "");
-				const eventLink = String(
-					event.querySelector("a")?.getAttribute("href")
-				);
-				const dateTime = String(
-					event.querySelector("time")?.getAttribute("datetime")
-				);
-				const location = String(
-					event.querySelector("p.line-clamp-1.md\\:hidden")?.textContent
-				);
-				const summary = String(
-					event.querySelector("p.hidden.md\\:line-clamp-1.text-gray6")
-						?.textContent
-				);
-				const image = String(event.querySelector("img")?.getAttribute("src"));
-
-				return {
-					id,
-					name,
-					eventLink,
-					dateTime,
-					location,
-					summary,
-					image,
-				};
-			});
-		}
+		(events) =>
+			events.map((event) => ({
+				id: Number(event.getAttribute("data-eventref")),
+				name: String(event.querySelector("h2")?.textContent || ""),
+				eventLink: String(event.querySelector("a")?.getAttribute("href")),
+				dateTime: new Date(
+					String(event.querySelector("time")?.getAttribute("datetime"))
+				),
+				organizer: String(
+					event
+						.querySelector("p.line-clamp-1.md\\:hidden")
+						?.textContent?.replace("Group name:", "")
+						.trim() || ""
+				),
+				location: "",
+				image: String(event.querySelector("img")?.getAttribute("src")),
+			}))
 	);
 
-	eventData = await scrapeEventLocation(page, eventData);
+	for (const event of eventData) {
+		event.location = await scrapeEventLocation(page, event.eventLink);
+		await randomDelay();
+	}
 
 	return eventData.map((event) => ({
 		id: event.id,
@@ -71,40 +61,41 @@ async function scrapeMeetup(page: Page, url: string): Promise<Event[]> {
 		eventPlatform: "Meetup",
 		name: event.name,
 		eventLink: event.eventLink,
-		dateTime: new Date(event.dateTime),
+		dateTime: event.dateTime,
 		location: event.location,
-		summary: event.summary,
+		organizer: event.organizer,
 		image: event.image,
 	}));
 }
 
 async function scrapeEventLocation(
 	page: Page,
-	eventData: any[]
-): Promise<any[]> {
-	for (const event of eventData) {
-		if (event.eventLink) {
-			await page.goto(event.eventLink);
-			const locationSelector = "a[data-testid='venue-name-link']";
-			const locationHrefSelector = "a[data-textid='venue-name-link']";
-			await page.waitForSelector(".location-display", { timeout: 3000 });
-			let location = await page.$eval(locationSelector, (el) =>
+	eventLink: string
+): Promise<string> {
+	if (eventLink) {
+		try {
+			await page.goto(eventLink, { waitUntil: "networkidle", timeout: 60000 });
+		} catch (error) {
+			console.error(`Failed to navigate to event link: ${error}`);
+			return "";
+		}
+		let venueName, locationInfo, location;
+		try {
+			venueName = await page.$eval("a[data-testid='venue-name-link']", (el) =>
 				el.textContent?.trim()
 			);
-			if (!location) {
-				const locationHref = await page.$eval(locationHrefSelector, (el) =>
-					el?.getAttribute("href")?.trim()
-				);
-				location = locationHref;
-			}
-
-			event.location = location;
-
-			// creates a random delay before the next iteration in the for loop is run
-			await randomDelay();
+			locationInfo = await page.$eval(
+				"div[data-testid='location-info']",
+				(el) => el.textContent?.trim()
+			);
+			location = `${venueName}, ${locationInfo}`;
+		} catch (error) {
+			console.error(`Error fetching venue name and location info: ${error}`);
+			location = "";
 		}
+		return location.trim() || "";
 	}
-	return eventData;
+	return "";
 }
 
-export default scrapeMeetup;
+export { scrapeMeetup, scrapeEventLocation, scrollToBottom };
