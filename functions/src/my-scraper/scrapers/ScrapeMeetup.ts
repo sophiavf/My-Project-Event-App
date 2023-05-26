@@ -10,7 +10,6 @@ async function scrollToBottom(page: Page) {
 
 	while (true) {
 		await page.evaluate("window.scrollTo(0, document.body.scrollHeight)");
-		await page.waitForTimeout(800);
 
 		newHeight = await page.evaluate(() => document.body.scrollHeight);
 
@@ -19,7 +18,7 @@ async function scrollToBottom(page: Page) {
 			break;
 		}
 		previousHeight = newHeight;
-		await randomDelay(); 
+		await randomDelay();
 	}
 }
 
@@ -80,21 +79,25 @@ async function scrapeEventLocation(
 			console.error(`Failed to navigate to event link: ${error}`);
 			return "";
 		}
-		let venueName, locationInfo, location;
+		let venueName = "",
+			locationInfo = "",
+			location;
 		try {
-			venueName = await page.$eval("a[data-testid='venue-name-link']", (el) =>
-				el.textContent?.trim()
-			);
-			locationInfo = await page.$eval(
-				"div[data-testid='location-info']",
-				(el) => el.textContent?.trim()
-			);
+			venueName =
+				(await page.$eval("a[data-testid='venue-name-link']", (el) =>
+					el.textContent?.trim()
+				)) || "";
+			locationInfo =
+				(await page.$eval("div[data-testid='location-info']", (el) =>
+					el.textContent?.trim()
+				)) || "";
 			location = `${venueName}, ${locationInfo}`;
 		} catch (error) {
 			console.error(`Error fetching venue name and location info: ${error}`);
 			location = "";
 		}
-		return location.trim() || "";
+		// if both venueName and locationInfo are empty, return an empty string 
+		return venueName || locationInfo ? location.trim() : "";
 	}
 	return "";
 }

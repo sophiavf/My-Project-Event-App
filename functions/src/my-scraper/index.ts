@@ -2,8 +2,8 @@ import { chromium, Page } from "playwright";
 
 import Event from "../types/Event.js";
 
-const MIN_DELAY = 1; // minimum delay between requests in seconds
-const MAX_DELAY = 4; // maximum delay between requests in seconds
+const MIN_DELAY = 0.5; // minimum delay between requests in seconds
+const MAX_DELAY = 2; // maximum delay between requests in seconds
 
 async function randomDelay() {
 	const delay = Math.floor(
@@ -33,6 +33,6 @@ export default async function runScraper(
 	}
 	await browser.close();
 	return events;
-}
+}  
 
 export { randomDelay };

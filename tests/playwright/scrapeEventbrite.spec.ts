@@ -3,7 +3,7 @@ import {
 	goToNextPage,
 	processEvents,
 } from "../../functions/src/my-scraper/scrapers/ScrapeEventbrite";
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 import { eventbriteUrl } from "../../functions/src/index";
 
 import { readFileSync } from "fs";
@@ -12,7 +12,7 @@ const dataFilePath = join(__dirname, "./eventbriteTestData.json");
 const rawData = readFileSync(dataFilePath, "utf-8");
 const data = JSON.parse(rawData);
 
-test("Page is opened", async ({ page }) => {
+test("page is opened", async ({ page }) => {
 	await page.goto(eventbriteUrl);
 	expect(await page.url()).toBe(eventbriteUrl);
 });
@@ -23,9 +23,9 @@ test("scrapeEventbrite returns an array", async ({ page }) => {
 	expect(Array.isArray(events)).toBe(true);
 });
 
-test("goToNextPage returns a boolean", async ({ page }) => {
-	const hasNextPage = await goToNextPage(page);
-	expect(typeof hasNextPage).toBe("boolean");
+test("goToNextpage returns a boolean", async ({ page }) => {
+	const hasNextpage = await goToNextPage(page);
+	expect(typeof hasNextpage).toBe("boolean");
 });
 
 test("processEvents returns an array", () => {
@@ -44,15 +44,15 @@ test("scrapeEventbrite should return valid Event objects", async ({ page }) => {
 	}
 });
 
-// Test for the goToNextPage function
-test("goToNextPage should navigate to the next page", async ({ page }) => {
+// Test for the goToNextpage function
+test("goToNextpage should navigate to the next page", async ({ page }) => {
 	await page.goto(eventbriteUrl);
 	const initialUrl = page.url();
-	const hasNextPage = await goToNextPage(page);
+	const hasNextpage = await goToNextPage(page);
 	await page.waitForURL;
 	const newUrl = page.url();
 
-	expect(hasNextPage).toBe(true);
+	expect(hasNextpage).toBe(true);
 	expect(initialUrl).not.toBe(newUrl);
 });
 
