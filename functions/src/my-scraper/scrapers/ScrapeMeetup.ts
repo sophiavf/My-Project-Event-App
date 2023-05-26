@@ -10,7 +10,7 @@ async function scrollToBottom(page: Page) {
 
 	while (true) {
 		await page.evaluate("window.scrollTo(0, document.body.scrollHeight)");
-		await page.waitForTimeout(1000);
+		await page.waitForTimeout(800);
 
 		newHeight = await page.evaluate(() => document.body.scrollHeight);
 
@@ -19,12 +19,13 @@ async function scrollToBottom(page: Page) {
 			break;
 		}
 		previousHeight = newHeight;
+		await randomDelay(); 
 	}
 }
 
 // Scrape events
 async function scrapeMeetup(page: Page, url: string): Promise<Event[]> {
-	page.goto(url, { waitUntil: "networkidle" });
+	await page.goto(url);
 	// scroll to bottom of page using function above to ensure all available data is loaded
 	await scrollToBottom(page);
 
@@ -74,7 +75,7 @@ async function scrapeEventLocation(
 ): Promise<string> {
 	if (eventLink) {
 		try {
-			await page.goto(eventLink, { waitUntil: "networkidle", timeout: 60000 });
+			await page.goto(eventLink);
 		} catch (error) {
 			console.error(`Failed to navigate to event link: ${error}`);
 			return "";

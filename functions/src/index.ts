@@ -1,6 +1,6 @@
 // The Firebase Admin SDK to access Firestore.
-import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
-import { getFirestore, Timestamp, FieldValue } from "firebase-admin/firestore";
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 
 initializeApp();
 const db = getFirestore();
@@ -39,4 +39,4 @@ exports.eventbriteScraper = onSchedule("every day 02:00", async () => {
 	logger.log("Event eventbrite data update finished");
 });
 
-export { meetupUrl, eventbriteUrl };
+export { meetupUrl, eventbriteUrl, db };

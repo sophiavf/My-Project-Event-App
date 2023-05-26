@@ -1,5 +1,6 @@
 import { Firestore } from "firebase-admin/firestore";
 
+
 export default async function cleanupOldEvents(db: Firestore) {
 	const cutoff = new Date();
 	cutoff.setDate(cutoff.getDate() - 1); // only removes events which happened > 24hrs ago
