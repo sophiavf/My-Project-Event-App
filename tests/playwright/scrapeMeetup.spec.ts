@@ -3,8 +3,8 @@ import {
 	scrapeMeetup,
 	scrapeEventLocation,
 	scrollToBottom,
-} from "../../src/my-scraper/scrapers/ScrapeMeetup"; // replace with the actual file name
-import { meetupUrl } from "../../src";
+} from "../../functions/src/my-scraper/scrapers/ScrapeMeetup"; // replace with the actual file name
+import { meetupUrl } from "../../functions/src";
 
 test("scrollToBottom function", async ({ page }) => {
 	// You can replace with an actual meetup page url
@@ -19,6 +19,7 @@ test("scrollToBottom function", async ({ page }) => {
 });
 
 test("scrapeMeetup function", async ({ page }) => {
+	test.setTimeout(2000000);
 	// You can replace with an actual meetup page url
 	const events = await scrapeMeetup(page, meetupUrl);
 	console.log(events);
@@ -38,9 +39,24 @@ test("scrapeMeetup function", async ({ page }) => {
 });
 
 test("scrapeEventLocation function", async ({ page }) => {
+	
 	// You can replace with an actual meetup event url
 	const location = await scrapeEventLocation(page, meetupUrl);
+	console.log(location); 
 
 	// Test if location is a string
 	expect(typeof location).toBe("string");
+});
+
+test("scrapeMeetup returns an array with no duplicates", async ({
+	page,
+}) => {
+	test.setTimeout(2000000);
+	const events = await scrapeMeetup(page, meetupUrl);	
+
+    const ids = events.map(event => event.id);
+	const idsSet = new Set(ids);
+
+	//This test will fail if there are any duplicate ids in the events array, as the size of the ids array will be larger than the size of the idsSet. because when you create a Set, it automatically removes duplicates, only storing unique values.
+	expect(ids.length).toBe(idsSet.size);
 });

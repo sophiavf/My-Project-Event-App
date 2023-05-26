@@ -2,13 +2,13 @@ import {
 	scrapeEventbrite,
 	goToNextPage,
 	processEvents,
-} from "../../src/my-scraper/scrapers/ScrapeEventbrite";
-import { test, expect, chromium, Page, Browser } from "@playwright/test";
-import { eventbriteUrl } from "../../src/index";
+} from "../../functions/src/my-scraper/scrapers/ScrapeEventbrite";
+import { test, expect } from "@playwright/test";
+import { eventbriteUrl } from "../../functions/src/index";
 
 import { readFileSync } from "fs";
 import { join } from "path";
-const dataFilePath = join(__dirname, "../eventbriteTestData.json");
+const dataFilePath = join(__dirname, "./eventbriteTestData.json");
 const rawData = readFileSync(dataFilePath, "utf-8");
 const data = JSON.parse(rawData);
 
@@ -60,6 +60,10 @@ test("scrapeEventbrite returns an array with no duplicates", async ({
 	page,
 }) => {
 	const events = await scrapeEventbrite(page, eventbriteUrl);
-	const eventsSet = new Set(events);
-	expect(events.length).toBe(eventsSet.size);
+
+    const ids = events.map(event => event.id);
+	const idsSet = new Set(ids);
+
+	//This test will fail if there are any duplicate ids in the events array, as the size of the ids array will be larger than the size of the idsSet.
+	expect(ids.length).toBe(idsSet.size);;
 });

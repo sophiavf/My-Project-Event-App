@@ -9,14 +9,12 @@
     "target": "es2017",
     "types": [
       // ... other types
-      "jest"
+     
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,
   },
   "compileOnSave": true,
   "include": [
-    "src",
-    "**/*.spec.ts"
-  ]
+    "src"]
 }
