@@ -1,8 +1,5 @@
-import { initializeApp } from "firebase/app";
-import {
-	getFirestore ,
-	connectFirestoreEmulator,
-} from "firebase/firestore";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyCgWtbbZxzwd6RhcpVhBgrbGLLK4lJLxfc",
@@ -10,20 +7,13 @@ const firebaseConfig = {
 	projectId: "my-tech-event-aggregator",
 	storageBucket: "my-tech-event-aggregator.appspot.com",
 	messagingSenderId: "1090087767285",
-	appId: "1:1090087767285:web:866731446e497742d449bc"
-  };
+	appId: "1:1090087767285:web:866731446e497742d449bc",
+};
 
-let db;
 
-//configures to use the local host if emulator is running 
-if (location.host === "localhost") {
-	//https://firebase.google.com/docs/emulator-suite/connect_firestore#web-version-9
-	db = getFirestore();
-	connectFirestoreEmulator(db, "localhost", 8080);
-} else {
-	// https://firebase.google.com/docs/firestore/quickstart#web-version-9_1
-	const app = initializeApp(firebaseConfig);
-	db = getFirestore(app);
-}
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// https://firebase.google.com/docs/firestore/quickstart#web-version-9_1
+const db = getFirestore(app);
 
 export default db;

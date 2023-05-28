@@ -32,6 +32,8 @@ export default async function runScraper(
 		console.error("An error occurred while calling back the page:", error);
 	}
 	await browser.close();
+	await page.close();
+	await context.close();
 	return events;
 }  
 

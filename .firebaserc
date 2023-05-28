@@ -1,7 +1,6 @@
 {
 	"projects": {
-		"default": "my-tech-event-aggregator",
-		"staging ": "staging-tech-event-aggregator"
+		"default": "my-tech-event-aggregator"
 	},
 	"targets": {},
 	"etags": {}

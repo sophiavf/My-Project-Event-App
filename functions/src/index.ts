@@ -1,9 +1,8 @@
 // The Firebase Admin SDK to access Firestore.
-const { initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+import { adminDb } from "./firebaseAdmin";
 
-initializeApp();
-const db = getFirestore();
+import * as admin from "firebase-admin"; 
+
 
 //Import firebase functions
 import { logger } from "firebase-functions";
@@ -23,20 +22,20 @@ const eventbriteUrl =
 	"https://www.eventbrite.com/d/germany--m%C3%BCnchen/free--science-and-tech--events/?ang=en";
 
 exports.cleanupEvents = onSchedule("every day 00:00", async () => {
-	await cleanupOldEvents(db);
+	await cleanupOldEvents(adminDb);
 	logger.log("Event cleanup finished");
 });
 
 exports.meetupScraper = onSchedule("every day 01:00", async () => {
 	const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
-	updateDatabase(events, db);
+	await updateDatabase(events, adminDb);
 	logger.log("Event meetup data update finished");
 });
 
 exports.eventbriteScraper = onSchedule("every day 02:00", async () => {
 	const events = await runScraper(eventbriteUrl, scrapeEventbrite);
-	updateDatabase(events, db);
+	await updateDatabase(events, adminDb);
 	logger.log("Event eventbrite data update finished");
 });
 
-export { meetupUrl, eventbriteUrl, db };
+export { meetupUrl, eventbriteUrl, adminDb };

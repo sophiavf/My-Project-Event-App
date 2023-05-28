@@ -3,30 +3,20 @@ import EventComponent from "./EventComponent";
 import Event from "../types/EventInterface";
 import React from "react";
 import db from "../db";
+import { collection, getDocs } from "firebase/firestore";
 
 function EventList() {
 	const [getEvents, setEvents] = useState<Array<Event>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [isEmpty, setIsEmpty] = useState<boolean>(true);
 	useEffect(() => {
-		//https://www.freecodecamp.org/news/how-to-consume-rest-apis-in-react/
 		const fetchEvents = async () => {
-			// try {
-			// 	const response = await fetch("/api/events");
-			// 	const data: Event[] = await response.json();
-			// 	setEvents(data);
-			// 	setLoading(false);
-			// } catch (error) {
-			// 	console.log(error);
-			// }
-
 			try {
-				const eventsRef = db.collection("events");
-				const eventsSnapshot = await eventsRef.get();
+				const eventsSnapshot = await getDocs(collection(db, "events"));
 				const eventsData: Event[] = [];
 				eventsSnapshot.forEach((doc) => {
-					const data = doc.data();
-					data.push(data);
+					const eventData: Event = doc.data() as Event;
+					eventsData.push(eventData);
 				});
 				setEvents(eventsData);
 				setLoading(false);

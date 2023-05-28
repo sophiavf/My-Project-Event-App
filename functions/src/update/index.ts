@@ -5,6 +5,7 @@ export default async function updateDatabase(
 	events: Event[],
 	db: Firestore
 ) {
+	
 	const batch = db.batch();
 
 	for (const event of events) {
