@@ -1,9 +1,6 @@
 // The Firebase Admin SDK to access Firestore.
 import { adminDb } from "./firebaseAdmin";
 
-import * as admin from "firebase-admin"; 
-
-
 //Import firebase functions
 import { logger } from "firebase-functions";
 
