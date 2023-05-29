@@ -9,9 +9,7 @@ const firebaseConfig = {
 	messagingSenderId: "1090087767285",
 	appId: "1:1090087767285:web:866731446e497742d449bc",
 };
-
-
-
+// checks if app was already initialized 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // https://firebase.google.com/docs/firestore/quickstart#web-version-9_1
 const db = getFirestore(app);
