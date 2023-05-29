@@ -23,49 +23,49 @@ async function scrollToBottom(page: Page) {
 }
 
 // Scrape events
-async function scrapeMeetup(page: Page, url: string): Promise<Event[]> {
+async function scrapeMeetup(page: Page, url: string) {
 	await page.goto(url);
 	// scroll to bottom of page using function above to ensure all available data is loaded
 	await scrollToBottom(page);
 
-	// The method runs document.querySelectorAll within the page
-	const eventData = await page.$$eval(
-		"div[data-testid='categoryResults-eventCard']",
-		(events) =>
-			events.map((event) => ({
-				id: Number(event.getAttribute("data-eventref")),
-				name: String(event.querySelector("h2")?.textContent || ""),
-				eventLink: String(event.querySelector("a")?.getAttribute("href")),
-				dateTime: new Date(
-					String(event.querySelector("time")?.getAttribute("datetime"))
-				),
-				organizer: String(
-					event
-						.querySelector("p.line-clamp-1.md\\:hidden")
-						?.textContent?.replace("Group name:", "")
-						.trim() || ""
-				),
-				location: "",
-				image: String(event.querySelector("img")?.getAttribute("src")),
-			}))
-	);
+	const elements = page.locator('div[data-testid="categoryResults-eventCard"]');
+	const eventData: Event[] = [];
+
+	for (let i = 0; i < (await elements.count()); i++) {
+		const element = elements.nth(i);
+		const id = Number(await element.getAttribute("data-eventref"));
+		const name = (await element.locator("h2").textContent()) || "";
+		const eventLink =
+			(await element.locator("a").first().getAttribute("href")) || "";
+		const dateTime =
+			(await element.locator("time").first().getAttribute("title")) || "";
+		let organizer =
+			(await element
+				.locator("p.line-clamp-1.md\\:hidden")
+				.first()
+				.textContent()) || "";
+		organizer = organizer.replace("Group name:", "").trim();
+		const image =
+			(await element.locator("img").first().getAttribute("src")) || "";
+
+		eventData.push({
+			id,
+			writeTimestamp: Timestamp.now(),
+			eventPlatform: "Meetup",
+			name,
+			eventLink,
+			dateTime: Timestamp.fromDate(new Date(dateTime)),
+			location: "",
+			organizer,
+			image,
+		});
+	}
 
 	for (const event of eventData) {
 		event.location = await scrapeEventLocation(page, event.eventLink);
 		await randomDelay();
 	}
-
-	return eventData.map((event) => ({
-		id: event.id,
-		writeTimestamp: Timestamp.fromDate(new Date()),
-		eventPlatform: "Meetup",
-		name: event.name,
-		eventLink: event.eventLink,
-		dateTime: event.dateTime,
-		location: event.location,
-		organizer: event.organizer,
-		image: event.image,
-	}));
+	return eventData;
 }
 
 async function scrapeEventLocation(
@@ -84,19 +84,30 @@ async function scrapeEventLocation(
 			location;
 		try {
 			venueName =
-				(await page.$eval("a[data-testid='venue-name-link']", (el) =>
-					el.textContent?.trim()
-				)) || "";
-			locationInfo =
-				(await page.$eval("div[data-testid='location-info']", (el) =>
-					el.textContent?.trim()
-				)) || "";
-			location = `${venueName}, ${locationInfo}`;
+				(await page
+					.locator("a[data-testid='venue-name-link']")
+					.first()
+					.textContent()) || "";
 		} catch (error) {
-			console.error(`Error fetching venue name and location info: ${error}`);
-			location = "";
+			console.error(`Error fetching venue name: ${error}`);
+			venueName = "";
 		}
-		// if both venueName and locationInfo are empty, return an empty string 
+		try {
+			locationInfo =
+				(await page
+					.locator("div[data-testid='location-info']")
+					.first()
+					.textContent()) || "";
+		} catch (error) {
+			console.error(`Error fetching location info: ${error}`);
+			locationInfo = "";
+		}
+
+		location = `${venueName}${
+			venueName && locationInfo ? ", " : ""
+		}${locationInfo}`.trim();
+
+		// if both venueName and locationInfo are empty, return an empty string
 		return venueName || locationInfo ? location.trim() : "";
 	}
 	return "";

@@ -2,12 +2,22 @@ import Event from "../types/EventInterface";
 import meetupLogo from "../assets/meetup-logo.png";
 import eventbriteLogo from "../assets/eventbrite-logo.png";
 import React from "react";
-
+import { Timestamp } from "firebase-admin/firestore";
 interface EventCardProps {
 	event: Event;
 }
 
-//function formatDate(dateData: Date) {}
+function formatDate(dateData: Timestamp) {
+
+	const timeDate = dateData.toDate(); 
+
+	return new Date(timeDate).toLocaleDateString("en-us", {
+		weekday: "long",
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	})
+}
 
 //https://stackoverflow.com/questions/55075740/property-does-not-exist-on-type-intrinsicattributes
 //https://www.typescriptlang.org/docs/handbook/jsx.html#basic-usage
@@ -18,7 +28,8 @@ export default function EventComponent({ event }: EventCardProps) {
 			<div className="flex flex-col justify-between flex-wrap gap-2 place-self-stretch md:w-2/3">
 				<div className="text-lg text-neutral2">{event.name}</div>
 				<div className="text-secondary text-sm">
-					{event.dateTime.toString()}, {event.location} 
+					{formatDate(event.dateTime)}
+					, {event.location}
 				</div>
 				{event.summary && (
 					<p className="text-neutral2 text-xs">{event.summary}</p>

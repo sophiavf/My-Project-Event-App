@@ -1,4 +1,4 @@
-import { Page, Response} from "playwright";
+import { Page, Response } from "playwright";
 import { Timestamp } from "firebase-admin/firestore";
 import Event from "../../types/Event";
 // import { randomDelay } from "../index";
@@ -13,7 +13,7 @@ function processEvents(rawData: any[]): Event[] {
 		eventPlatform: "Eventbrite",
 		name: event?.name,
 		eventLink: event?.url,
-		dateTime: new Date(`${event?.start_date} ${event?.start_time}`),
+		dateTime: Timestamp.fromDate(new Date(`${event?.start_date} ${event?.start_time}`)),
 		location: event?.primary_venue?.name,
 		summary: event?.summary,
 		organizer: event?.primary_organizer?.name,
@@ -76,6 +76,7 @@ async function scrapeEventbrite(page: Page, url: string): Promise<Event[]> {
 			events = events.concat(processEvents(data.events.results));
 		}
 	}
+	// Filter out the events with words in the name which match the case insensitive exclude pattern
 	return events;
 }
 

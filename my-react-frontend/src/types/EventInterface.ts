@@ -8,7 +8,7 @@ export default interface Event {
 	eventPlatform: string;
 	name: string;
 	eventLink: string;
-	dateTime: Date;
+	dateTime: Timestamp;
 	location: string;
 	summary?: string;
 	organizer: string; 
