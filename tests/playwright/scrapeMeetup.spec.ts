@@ -12,12 +12,14 @@ import Event from "../../functions/src/types/Event";
 test.describe("Meetup event scraper", () => {
 	let events: Event[];
 
-	test.beforeAll(async ({ page }) => {
-		test.setTimeout(2000000);
-		events = await scrapeMeetup(page, meetupUrl);
-	});
+
+	// test.beforeAll(async ({ page }) => {
+	// 	test.setTimeout(2000000);
+	// 	events = await scrapeMeetup(page, meetupUrl);
+	// });
 	test("scrollToBottom function", async ({ page }) => {
 		// You can replace with an actual meetup page url
+		
 		await page.goto(meetupUrl);
 		await scrollToBottom(page);
 
@@ -25,19 +27,22 @@ test.describe("Meetup event scraper", () => {
 		const scrolledHeight = await page.evaluate(() => window.scrollY);
 		const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
 
-		expect(scrolledHeight).toEqual(bodyHeight);
+		expect(scrolledHeight).toEqual(bodyHeight-720);
 	});
 
-	test("scrapeMeetup function returns an array with the required properties", async ({
+	test("scrapeMeetup function returns an array with the required properties and no duplicates", async ({
 		page,
 	}) => {
+		test.setTimeout(190000);
+		// events = await scrapeMeetup(page, meetupUrl);
 		// You can replace with an actual meetup page url
+		events = await scrapeMeetup(page, meetupUrl);
 		console.log(events);
 		console.log(events.length);
 
 		// Test if events is an array
 		expect(Array.isArray(events)).toBe(true);
-		expect(events).toBeGreaterThan(5);
+		expect(events.length).toBeGreaterThan(5); 
 
 		// Test if each event has the correct structure
 		events.forEach((event) => {
@@ -48,9 +53,7 @@ test.describe("Meetup event scraper", () => {
 			expect(event).toHaveProperty("location");
 			expect(event).toHaveProperty("image");
 		});
-	});
 
-	test("scrapeMeetup returns an array with no duplicates", async ({ page }) => {
 		const ids = events.map((event) => event.id);
 		const idsSet = new Set(ids);
 
