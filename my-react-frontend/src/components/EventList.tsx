@@ -33,7 +33,7 @@ function EventList() {
 	return (
 		<div className="flex flex-col items-center justify-center">
 			<div className="flex flex-col content-center">
-				{loading || isEmpty ? (
+				{loading || !isEmpty ? (
 					<p>Loading...</p>
 				) : (
 					getEvents.map((event) => (
