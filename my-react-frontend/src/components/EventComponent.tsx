@@ -8,15 +8,17 @@ interface EventCardProps {
 }
 
 function formatDate(dateData: Timestamp) {
-
-	const timeDate = dateData.toDate(); 
+	const timeDate = dateData.toDate();
 
 	return new Date(timeDate).toLocaleDateString("en-us", {
 		weekday: "long",
 		year: "numeric",
 		month: "short",
 		day: "numeric",
-	})
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: true,
+	});
 }
 
 //https://stackoverflow.com/questions/55075740/property-does-not-exist-on-type-intrinsicattributes
@@ -24,13 +26,13 @@ function formatDate(dateData: Timestamp) {
 //Components have only one parameter which is the props object
 export default function EventComponent({ event }: EventCardProps) {
 	return (
-		<div className="flex md:flex-row items-center bg-neutral1 rounded m-5 p-5 max-w-2xl justify-between gap-4 flex-col">
+		<div className="flex md:flex-row items-center bg-neutral1 rounded m-5 p-5 max-w-2xl justify-between gap-4 flex-col shadow-md">
 			<div className="flex flex-col justify-between flex-wrap gap-2 place-self-stretch md:w-2/3">
 				<div className="text-lg text-neutral2">{event.name}</div>
 				<div className="text-secondary text-sm">
 					{formatDate(event.dateTime)}
-					, {event.location}
 				</div>
+				<div className="text-md">{event.location}</div>
 				{event.summary && (
 					<p className="text-neutral2 text-xs">{event.summary}</p>
 				)}
@@ -48,24 +50,24 @@ export default function EventComponent({ event }: EventCardProps) {
 					</button>
 				</a>
 			</div>
-			<div className="flex md:flex-col mt-4 content-between place-self-stretch gap-5 flex-row justify-center place-items-center md:w-1/3">
+			<div className="flex md:flex-col justify-evenly mt-4 content-between place-self-stretch gap-5 flex-row place-items-center md:w-1/3">
 				{event.eventPlatform === "Eventbrite" ? (
 					<img
 						title="eventbrite logo"
 						src={eventbriteLogo}
-						className="self-center flex justify-center w-1/2 md:w-auto"
+						className="self-center justify-center h-8"
 					/>
 				) : (
 					<img
 						title="meetup logo"
 						src={meetupLogo}
-						className="self-center flex justify-center w-1/2 md:w-auto"
+						className="self-center justify-center h-12"
 					/>
 				)}
 				<img
 					src={event.image}
 					alt="Event"
-					className=" rounded-lg w-1/2 md:w-auto"
+					className=" rounded-lg md:w-auto h-26"
 				/>
 			</div>
 		</div>

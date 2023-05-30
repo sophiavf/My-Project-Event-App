@@ -2,18 +2,19 @@
 export default {
 	content: ["./src/**/*.{js,ts,jsx,tsx}"],
 	theme: {
-		colors: {
-			primary: "#F64060",
-			secondary: "#F05537",
-			accent: "#FF8C66",
-			complementary: "#60F6E2",
-			neutral1: "#F5F5F5",
-			neutral2: "#333333",
+		extend: {
+			colors: {
+				primary: "#F64060",
+				secondary: "#F05537",
+				accent: "#FF8C66",
+				complementary: "#60F6E2",
+				neutral1: "#F5F5F5",
+				neutral2: "#333333",
+			},
+			fontFamily: {
+				sans: ["Helvetica", "Arial", "sans-serif"],
+			},
 		},
-		fontFamily: {
-			sans: ["Helvetica", "Arial", "sans-serif"],
-		},
-		extend: {},
 	},
 	plugins: [],
 };
