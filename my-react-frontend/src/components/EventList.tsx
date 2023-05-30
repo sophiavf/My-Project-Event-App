@@ -80,7 +80,7 @@ function EventList() {
 		fetchEvents();
 		// Scroll to the top of the page.
 		window.scrollTo(0, 0);
-	}, [page, pageNum, navigate, pageEnds]);
+	}, [page]);
 
 	return (
 		<div className="flex flex-col items-center justify-center flex-1">
