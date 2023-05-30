@@ -9,17 +9,17 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
 	return (
-		<div className="App flex flex-col h-screen">
-			<Header />
-			<EventSummary />
-			<Router>
+		<Router>
+			<div className="App flex flex-col h-screen">
+				<Header />
+				<EventSummary />
 				<Routes>
-					<Route path="/events" element={<EventList />} />
-					<Route path="/events/page/:pageNum" element={<EventList />} />
+					<Route path="/" element={<EventList />} />
+					<Route path="/page/:pageNum" element={<EventList />} />
 				</Routes>
-			</Router>
-			<Footer />
-		</div>
+				<Footer />
+			</div>
+		</Router>
 	);
 }
 
