@@ -28,7 +28,7 @@ async function scrapeMeetup(page: Page, url: string) {
 	// scroll to bottom of page using function above to ensure all available data is loaded
 	await scrollToBottom(page);
 
-	const elements = page.locator('div[data-testid="categoryResults-eventCard"]');
+	const elements = page.locator("div[data-testid='categoryResults-eventCard']");
 	const eventData: Event[] = [];
 
 	for (let i = 0; i < (await elements.count()); i++) {
@@ -80,8 +80,7 @@ async function scrapeEventLocation(
 			return "";
 		}
 		let venueName = "",
-			locationInfo = "",
-			location;
+			locationInfo = "";			
 		try {
 			venueName =
 				(await page
@@ -103,7 +102,7 @@ async function scrapeEventLocation(
 			locationInfo = "";
 		}
 
-		location = `${venueName}${
+		const location = `${venueName}${
 			venueName && locationInfo ? ", " : ""
 		}${locationInfo}`.trim();
 
