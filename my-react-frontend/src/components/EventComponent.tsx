@@ -50,24 +50,24 @@ export default function EventComponent({ event }: EventCardProps) {
 					</button>
 				</a>
 			</div>
-			<div className="flex md:flex-col justify-evenly mt-4 content-between place-self-stretch gap-5 flex-row place-items-center md:w-1/3">
+			<div className="flex flex-col justify-center items-center md:w-1/3 gap-5 mt-4">
 				{event.eventPlatform === "Eventbrite" ? (
 					<img
 						title="eventbrite logo"
 						src={eventbriteLogo}
-						className="self-center justify-center h-8"
+						className="self-center justify-self-center w-15 h-9 md:w-32 md:h-24 object-contain"
 					/>
 				) : (
 					<img
 						title="meetup logo"
 						src={meetupLogo}
-						className="self-center justify-center h-12"
+						className="self-center justify-self-center w-17 h-14 md:w-28 md:h-24 object-contain"
 					/>
 				)}
 				<img
 					src={event.image}
 					alt="Event"
-					className=" rounded-lg md:w-auto h-26"
+					className="rounded-lg w-full object-cover h-48 md:h-auto"
 				/>
 			</div>
 		</div>
