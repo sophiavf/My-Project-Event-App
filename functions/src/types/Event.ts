@@ -13,6 +13,4 @@ interface Event {
 	image: string;
 }
 
-
-
 export default Event
