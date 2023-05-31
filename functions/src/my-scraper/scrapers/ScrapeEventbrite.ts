@@ -1,7 +1,6 @@
 import { Page, Response } from "playwright";
 import { Timestamp } from "firebase-admin/firestore";
 import Event from "../../types/Event";
-// import { randomDelay } from "../index";
 
 // Helper function to convert raw data to Event objects
 // The input parameter is an object with an 'events' property
@@ -13,7 +12,9 @@ function processEvents(rawData: any[]): Event[] {
 		eventPlatform: "Eventbrite",
 		name: event?.name,
 		eventLink: event?.url,
-		dateTime: Timestamp.fromDate(new Date(`${event?.start_date} ${event?.start_time}`)),
+		dateTime: Timestamp.fromDate(
+			new Date(`${event?.start_date} ${event?.start_time}`)
+		),
 		location: event?.primary_venue?.name,
 		summary: event?.summary,
 		organizer: event?.primary_organizer?.name,
@@ -66,6 +67,8 @@ async function scrapeEventbrite(page: Page, url: string): Promise<Event[]> {
 	while (hasNextPage) {
 		hasNextPage = await goToNextPage(page);
 	}
+	// Remove the last response before processing because this contains only popular events which the algorithm reccomends and are not tech related 
+	responses.pop(); 
 
 	for (const response of responses) {
 		const { url, data } = response;

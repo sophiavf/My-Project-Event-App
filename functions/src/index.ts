@@ -14,7 +14,7 @@ import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
 import Event from "./types/Event";
 
 const runtimeOpts = {
-	timeoutSeconds: 300,
+	timeoutSeconds: 500,
 };
 
 const meetupUrl =
