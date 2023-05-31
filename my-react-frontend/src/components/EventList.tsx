@@ -83,7 +83,7 @@ function EventList() {
 	}, [page]);
 
 	return (
-		<div className="flex flex-col items-center justify-center flex-1">
+		<div className="flex flex-col items-center justify-between flex-1">
 			<div className="flex flex-col content-center">
 				{loading ? (
 					<div>
