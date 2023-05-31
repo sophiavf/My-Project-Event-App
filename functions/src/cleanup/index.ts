@@ -1,15 +1,35 @@
-import { Firestore } from "firebase-admin/firestore";
-
+import { Firestore, Timestamp } from "firebase-admin/firestore";
 
 export default async function cleanupOldEvents(adminDb: Firestore) {
-	const cutoff = new Date();
-	cutoff.setDate(cutoff.getDate() - 1); // only removes events which happened > 24hrs ago
-	const oldEventsQuery = adminDb.collection("events").where("dateTime", "<", cutoff); // gets events which are less than (older than) the cutoff
+	// timestamp 24 hours ago
+	const oneDayOldTimestamp = Timestamp.fromMillis(Date.now() - 86400000);
+	const eventsRef = adminDb.collection("events");
+	const query = eventsRef.where("dateTime", "<", oneDayOldTimestamp);
 
-	const querySnapshot = await oldEventsQuery.get();
+	return new Promise((resolve, reject) => {
+		deleteQueryBatch(adminDb, query, resolve).catch(reject);
+	});
+}
 
+async function deleteQueryBatch(adminDb: Firestore, query: any, resolve: any) {
+	const snapshot = await query.get();
+	const batchSize = snapshot.size;
+	if (batchSize === 0) {
+		// When there are no documents left, we are done
+		resolve();
+		return;
+	}
+	// Delete documents in a batch
 	const batch = adminDb.batch();
-	querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+	snapshot.docs.forEach((doc: any) => {
+		batch.delete(doc.ref);
+	});
+	await batch.commit();
 
-	batch.commit();
+	// Recurse on the next process tick, to avoid
+	// exploding the stack.
+
+	process.nextTick(() => {
+		deleteQueryBatch(adminDb, query, resolve);
+	});
 }
