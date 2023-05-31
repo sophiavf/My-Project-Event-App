@@ -28,6 +28,8 @@ module.exports = {
 		"no-constant-condition": ["off"],
 		"no-tabs": ["off"],
 		"quote-props": ["off"],
-		"no-explicit-any": ["off"]
+		"no-explicit-any": ["off"],
+		"no-var-requires": ["off"]
+
 	},
 };
