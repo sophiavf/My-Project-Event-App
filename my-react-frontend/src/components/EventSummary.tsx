@@ -34,7 +34,7 @@ export default function EventSummary() {
 	}, []);
 
 	return (
-		<div className="flex items-center flex-col pt-4 rounded-sm border-accent ">
+		<div className="flex items-center flex-col pt-4 rounded-sm border-accent m-5">
 			<div className="grid grid-cols-2 gap-4 w-full max-w-2xl bg-neutral1 p-4 rounded-lg shadow-md justify-items-center">
 				<div className="flex items-center">
 					<img
@@ -53,9 +53,9 @@ export default function EventSummary() {
 					<div>{getEventbriteCount || "0"}</div>
 				</div>
 				<div className="col-span-2 text-center">
-					<span className="text-xl font-bold">Total Events:</span>
+					<span className="text-xl font-bold">Total Events: </span>
 					<span className="text-xl font-semibold">
-						{(getMeetupCount || 0) + (getEventbriteCount || 0)}
+						{(getMeetupCount || 0) +  (getEventbriteCount || 0)}
 					</span>
 				</div>
 			</div>
