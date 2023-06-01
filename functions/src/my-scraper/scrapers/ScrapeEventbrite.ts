@@ -1,4 +1,4 @@
-import { Page, Response } from "playwright";
+import { Page, Response } from "playwright-core";
 import { Timestamp } from "firebase-admin/firestore";
 import Event from "../../types/Event";
 

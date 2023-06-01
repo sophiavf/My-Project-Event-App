@@ -1,4 +1,4 @@
-import { Page } from "playwright";
+import { Page } from "playwright-core";
 import Event from "../../types/Event";
 
 import { randomDelay } from "../index";

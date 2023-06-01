@@ -1,4 +1,5 @@
-import { chromium, Page } from "playwright";
+import playwright, { Page } from "playwright-core";
+import chromium from "chrome-aws-lambda";
 
 import Event from "../types/Event.js";
 
@@ -16,24 +17,28 @@ export default async function runScraper(
 	url: string,
 	callBack: (page: Page, url: string) => Promise<Event[]>
 ): Promise<Event[]> {
-	const browser = await chromium.launch();
-	//Prevents the site from blocking requests
-	const context = await browser.newContext({
-		userAgent:
-			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
-	});
-	const page = await context.newPage();
-
 	let events: Event[] = [];
+	let browser, context;
 
 	try {
+		browser = await playwright.chromium.launch({
+			args: chromium.args,
+			executablePath: await chromium.executablePath,
+			headless: chromium.headless,
+		});
+		context = await browser.newContext();
+		const page = await context.newPage();
 		events = await callBack(page, url);
 	} catch (error) {
 		console.error("An error occurred while calling back the page:", error);
+	} finally {
+		if (browser !== undefined && context !== undefined) {
+			await context.close();
+			await browser.close();
+		}
 	}
-	await browser.close();
-	
+
 	return events;
-}  
+}
 
 export { randomDelay };
