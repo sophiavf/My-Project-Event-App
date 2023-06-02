@@ -66,7 +66,7 @@ test.describe("Meetup event scraper", () => {
 			"https://www.meetup.com/tableau-user-group-munich/events/292275193/";
 
 		// You can replace with an actual meetup event url
-		const location = await scrapeEventLocation(page, meetupUrl);
+		const location = await scrapeEventLocation(page, eventUrl);
 		console.log(location);
 
 		// Test if location is a string
