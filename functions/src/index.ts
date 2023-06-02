@@ -16,8 +16,8 @@ import Event from "./types/Event";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 
 const funcTimeout = 3600;
-const funcMemory = "1GiB";
-const funcRegion = "europe-west3"; // Frankfurt, Germany https://firebase.google.com/docs/functions/locations
+const funcMemory = "2GiB"; //https://firebase.google.com/docs/reference/functions/2nd-gen/node/firebase-functions.md#memoryoption 
+const funcRegion = "europe-west1"; // Frankfurt, Germany https://firebase.google.com/docs/functions/locations
 
 setGlobalOptions({
 	timeoutSeconds: funcTimeout,
