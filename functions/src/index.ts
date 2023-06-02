@@ -15,7 +15,7 @@ import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
 import Event from "./types/Event";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 
-const funcTimeout = 900;
+const funcTimeout = 3600;
 const funcMemory = "1GiB";
 const funcRegion = "europe-west3"; // Frankfurt, Germany https://firebase.google.com/docs/functions/locations
 
