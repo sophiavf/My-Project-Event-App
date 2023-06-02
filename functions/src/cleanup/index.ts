@@ -2,9 +2,9 @@ import { Firestore, Timestamp } from "firebase-admin/firestore";
 
 export default async function cleanupOldEvents(adminDb: Firestore) {
 	// timestamp 24 hours ago
-	const oneDayOldTimestamp = Timestamp.fromMillis(Date.now() - 86400000);
+	const nowTimestamp = Timestamp.fromMillis(Date.now());
 	const eventsRef = adminDb.collection("events");
-	const query = eventsRef.where("dateTime", "<", oneDayOldTimestamp);
+	const query = eventsRef.where("dateTime", "<", nowTimestamp);
 
 	return new Promise((resolve, reject) => {
 		deleteQueryBatch(adminDb, query, resolve).catch(reject);
