@@ -7,6 +7,6 @@ export default defineConfig({
 	root: "./src",
 	plugins: [react(), splitVendorChunkPlugin()],
 	build: {
-		outDir: '../public'
-	  }
+		outDir: "../public",
+	},
 });
