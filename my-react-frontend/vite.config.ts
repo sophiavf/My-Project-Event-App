@@ -4,7 +4,6 @@ import { splitVendorChunkPlugin } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	root: "./src",
 	plugins: [react(), splitVendorChunkPlugin()],
 	build: {
 		outDir: "../public",
