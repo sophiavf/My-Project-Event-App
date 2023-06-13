@@ -11,7 +11,9 @@ import { scrapeMeetup } from "./my-scraper/scrapers/ScrapeMeetup";
 import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
 
 import Event from "./types/Event";
+
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import calculatePageEnds from "./calculatePageEnds";
 
 const funcTimeout: number = 500;
 const funcMemory = "1GiB";
@@ -20,6 +22,8 @@ const meetupUrl =
 	"https://www.meetup.com/find/?location=de--M%C3%BCnchen&source=EVENTS&sortField=RELEVANCE&eventType=inPerson&categoryId=546 ";
 const eventbriteUrl =
 	"https://www.eventbrite.com/d/germany--m%C3%BCnchen/free--science-and-tech--events/?ang=en";
+
+const eventsRef = adminDb.collection("events");
 
 exports.cleanupEvents = onSchedule(
 	{
@@ -42,6 +46,7 @@ exports.meetupScraper = onSchedule(
 	async () => {
 		const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
 		await updateDatabase(events, adminDb);
+		calculatePageEnds(adminDb);
 		logger.log("Event meetup data update finished");
 	}
 );
@@ -55,8 +60,9 @@ exports.eventbriteScraper = onSchedule(
 	async () => {
 		const events = await runScraper(eventbriteUrl, scrapeEventbrite);
 		await updateDatabase(events, adminDb);
+		calculatePageEnds(adminDb);
 		logger.log("Event eventbrite data update finished");
 	}
 );
 
-export { meetupUrl, eventbriteUrl, adminDb };
+export { meetupUrl, eventbriteUrl, adminDb, eventsRef };
