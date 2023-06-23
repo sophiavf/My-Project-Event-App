@@ -1,8 +1,13 @@
-import { initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
-const app = initializeApp();
+import * as admin from "firebase-admin";
+//import serviceAccountJson from "../serviceAccountKey.json";
+//const serviceAccount = serviceAccountJson as admin.ServiceAccount;
+// Need to use the below import instead when running Jest tests
+const serviceAccount = require("../serviceAccountKey.json");
 
-const adminDb = getFirestore(app);
+admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount),
+});
 
+const adminDb = admin.firestore();
 adminDb.settings({ ignoreUndefinedProperties: true });
 export { adminDb };

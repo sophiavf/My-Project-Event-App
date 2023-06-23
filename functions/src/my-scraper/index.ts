@@ -37,7 +37,6 @@ export default async function runScraper(
 			await browser.close();
 		}
 	}
-
 	return events;
 }
 

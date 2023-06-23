@@ -5,18 +5,20 @@ import { adminDb } from "./firebaseAdmin";
 import { setGlobalOptions } from "firebase-functions/v2";
 
 import { logger } from "firebase-functions";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 
-import cleanupOldEvents from "./cleanup";
+// Import functions 
+import cleanupOldEvents from "./cleanupOldEvents";
 import updateDatabase from "./update";
 import runScraper from "./my-scraper";
 import { scrapeMeetup } from "./my-scraper/scrapers/ScrapeMeetup";
 import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
+import { removeObsoleteEvents } from "./removeObsoleteEvents";
 
 import Event from "./types/Event";
-import { onSchedule } from "firebase-functions/v2/scheduler";
 
 const funcTimeout = 3600;
-const funcMemory = "2GiB"; //https://firebase.google.com/docs/reference/functions/2nd-gen/node/firebase-functions.md#memoryoption 
+const funcMemory = "2GiB"; //https://firebase.google.com/docs/reference/functions/2nd-gen/node/firebase-functions.md#memoryoption
 const funcRegion = "europe-west1"; // Frankfurt, Germany https://firebase.google.com/docs/functions/locations
 
 setGlobalOptions({
@@ -30,30 +32,23 @@ const meetupUrl =
 const eventbriteUrl =
 	"https://www.eventbrite.com/d/germany--m%C3%BCnchen/free--science-and-tech--events/?ang=en";
 
-exports.cleanupEvents = onSchedule(
-	"every day 00:00",
-	async () => {
-		await cleanupOldEvents(adminDb);
-		logger.log("Event cleanup finished");
-	}
-);
+exports.cleanupEvents = onSchedule("every day 00:00", async () => {
+	await cleanupOldEvents(adminDb);
+	logger.log("Event cleanup finished");
+});
 
-exports.meetupScraper = onSchedule(
-	"every day 01:00",
-	async () => {
-		const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
-		await updateDatabase(events, adminDb);
-		logger.log("Event meetup data update finished");
-	}
-);
+exports.meetupScraper = onSchedule("every day 01:00", async () => {
+	const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
+	await updateDatabase(events, adminDb);
+	await removeObsoleteEvents("Meetup", events);
+	logger.log("Event meetup data update finished");
+});
 
-exports.eventbriteScraper = onSchedule(
-	"every day 02:00",
-	async () => {
-		const events = await runScraper(eventbriteUrl, scrapeEventbrite);
-		await updateDatabase(events, adminDb);
-		logger.log("Event eventbrite data update finished");
-	}
-);
+exports.eventbriteScraper = onSchedule("every day 02:00", async () => {
+	const events = await runScraper(eventbriteUrl, scrapeEventbrite);
+	await updateDatabase(events, adminDb);
+	await removeObsoleteEvents("Eventbrite", events);
+	logger.log("Event eventbrite data update finished");
+});
 
 export { meetupUrl, eventbriteUrl, adminDb };
