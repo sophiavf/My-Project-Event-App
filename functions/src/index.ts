@@ -13,8 +13,6 @@ import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
 import Event from "./types/Event";
 
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import calculatePageEnds from "./calculatePageEnds";
-
 const funcTimeout: number = 500;
 const funcMemory = "1GiB";
 
@@ -46,7 +44,6 @@ exports.meetupScraper = onSchedule(
 	async () => {
 		const events: Event[] = await runScraper(meetupUrl, scrapeMeetup);
 		await updateDatabase(events, adminDb);
-		calculatePageEnds(adminDb);
 		logger.log("Event meetup data update finished");
 	}
 );
@@ -60,7 +57,6 @@ exports.eventbriteScraper = onSchedule(
 	async () => {
 		const events = await runScraper(eventbriteUrl, scrapeEventbrite);
 		await updateDatabase(events, adminDb);
-		calculatePageEnds(adminDb);
 		logger.log("Event eventbrite data update finished");
 	}
 );

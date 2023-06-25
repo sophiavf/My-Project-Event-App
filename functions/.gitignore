@@ -10,7 +10,8 @@ node_modules/
 
 
 # Sensitive data
-service-account.json
+serviceAccountKey.json
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
