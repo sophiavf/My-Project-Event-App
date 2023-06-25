@@ -18,8 +18,8 @@ import { removeObsoleteEvents } from "./removeObsoleteEvents";
 import Event from "./types/Event";
 const eventsRef = adminDb.collection("events");
 
-const funcTimeout = 3600;
-const funcMemory = "2GiB"; //https://firebase.google.com/docs/reference/functions/2nd-gen/node/firebase-functions.md#memoryoption
+const funcTimeout = 3000;
+const funcMemory = "1GiB"; //https://firebase.google.com/docs/reference/functions/2nd-gen/node/firebase-functions.md#memoryoption
 const funcRegion = "europe-west1"; // Frankfurt, Germany https://firebase.google.com/docs/functions/locations
 
 setGlobalOptions({

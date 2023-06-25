@@ -1,4 +1,4 @@
-import { Page } from "playwright-core";
+import { Page, Response } from "playwright-core";
 import Event from "../../types/Event";
 
 import { randomDelay } from "../index";
@@ -24,92 +24,72 @@ async function scrollToBottom(page: Page) {
 
 // Scrape events
 async function scrapeMeetup(page: Page, url: string) {
-	await page.goto(url);
-	// scroll to bottom of page using function above to ensure all available data is loaded
-	await scrollToBottom(page);
+	try {
+		await page.goto(url);
+		// scroll to bottom of page using function above to ensure all available data is loaded
+		await scrollToBottom(page);
 
-	const elements = page.locator("div[data-testid='categoryResults-eventCard']");
-	const eventData: Event[] = [];
+		const eventData: Event[] = [];
+		let response = null;
 
-	for (let i = 0; i < (await elements.count()); i++) {
-		const element = elements.nth(i);
-		const id = Number(await element.getAttribute("data-eventref"));
-		const name = (await element.locator("h2").textContent()) || "";
-		const eventLink =
-			(await element.locator("a").first().getAttribute("href")) || "";
-		const dateTime =
-			(await element.locator("time").first().getAttribute("title")) || "";
-		let organizer =
-			(await element
-				.locator("p.line-clamp-1.md\\:hidden")
-				.first()
-				.textContent()) || "";
-		organizer = organizer.replace("Group name:", "").trim();
-		const image =
-			(await element.locator("img").first().getAttribute("src")) || "";
+		page.on("response", async (response: Response) => {
+			const responseUrl = response.url();
+			const headers = response.headers();
+			const status = response.status();
+			const contentLength = response.headers()["content-length"];
 
-		eventData.push({
-			id,
-			writeTimestamp: Timestamp.now(),
-			eventPlatform: "Meetup",
-			name,
-			eventLink,
-			dateTime: Timestamp.fromDate(new Date(dateTime)),
-			location: "",
-			organizer,
-			image,
+			if (
+				!responseUrl.includes("gql2") &&
+				responseUrl.includes("gql") &&
+				headers["content-type"]?.includes("application/json") &&
+				status === 200 &&
+				parseInt(contentLength, 10) > 500
+			) {
+				const responseData = await response.json();
+				response = await { url: responseUrl, data: responseData };
+			}
 		});
-	}
 
-	for (const event of eventData) {
-		event.location = await scrapeEventLocation(page, event.eventLink);
-		await randomDelay();
+		if (
+			response &&
+			response?.data &&
+			response?.data.rankedEvents
+		) {
+			response?.data.rankedEvents.forEach((event: any) => {
+				const extractedEvent = {
+					id: Number(extractID(event.url)),
+					writeTimestamp: Timestamp.now(),
+					eventPlatform: "Meetup",
+					name: event.name || "",
+					eventLink: event.url || "",
+					dateTime: Timestamp.fromDate(new Date(event.startDate)),
+					location:
+						`${event.location?.name || ""}, ${
+							event.location?.address?.addressLocality || ""
+						}, ${event.location?.address?.streetAddress || ""}`.trim() || "",
+					summary: String(event?.description) || "",
+					organizer: event?.organizer?.name || "",
+					image: event?.image || "",
+				};
+				eventData.push(extractedEvent);
+			});
+		}
+
+		return eventData;
+	} catch (error) {
+		console.error(error);
+		return [];
 	}
-	return eventData;
 }
 
-async function scrapeEventLocation(
-	page: Page,
-	eventLink: string
-): Promise<string> {
-	if (eventLink) {
-		try {
-			await page.goto(eventLink);
-		} catch (error) {
-			console.error(`Failed to navigate to event link: ${error}`);
-			return "";
-		}
-		let venueName = "",
-			locationInfo = "";			
-		try {
-			venueName =
-				(await page
-					.locator("a[data-testid='venue-name-link']")
-					.first()
-					.textContent()) || "";
-		} catch (error) {
-			console.error(`Error fetching venue name: ${error}`);
-			venueName = "";
-		}
-		try {
-			locationInfo =
-				(await page
-					.locator("div[data-testid='location-info']")
-					.first()
-					.textContent()) || "";
-		} catch (error) {
-			console.error(`Error fetching location info: ${error}`);
-			locationInfo = "";
-		}
-
-		const location = `${venueName}${
-			venueName && locationInfo ? ", " : ""
-		}${locationInfo}`.trim();
-
-		// if both venueName and locationInfo are empty, return an empty string
-		return venueName || locationInfo ? location.trim() : "";
+function extractID(url: string) {
+	const regex = /(\d+)(?=\/?$)/;
+	const match = url.match(regex);
+	if (match) {
+		return match[1]; // return an empty array in case of error
+	} else {
+		return;
 	}
-	return "";
 }
 
-export { scrapeMeetup, scrapeEventLocation, scrollToBottom };
+export { scrapeMeetup, scrollToBottom };

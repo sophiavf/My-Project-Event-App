@@ -29,10 +29,11 @@ export default function EventComponent({ event }: EventCardProps) {
 		<div className="flex md:flex-row items-center bg-neutral1 rounded m-5 p-5 max-w-3xl justify-between gap-2 flex-col shadow-md">
 			<div className="flex flex-col justify-between flex-wrap gap-2 place-self-stretch md:w-2/3">
 				<div className="text-lg text-neutral2">{event.name}</div>
-				<div className="text-secondary text-sm">
+				<div className="text-sm font-semibold">{event.organizer}</div>
+				<div className="text-secondary text-md font-medium">
 					{formatDate(event.dateTime)}
 				</div>
-				<div className="text-md">{event.location}</div>
+				<div className="text-sm">{event.location}</div>
 				{event.summary && (
 					<p className="text-neutral2 text-xs">{event.summary}</p>
 				)}
@@ -50,7 +51,7 @@ export default function EventComponent({ event }: EventCardProps) {
 					</button>
 				</a>
 			</div>
-			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-full justify-between">
+			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-full justify-around">
 				<div className="">
 					{event.eventPlatform === "Eventbrite" ? (
 						<img
@@ -70,7 +71,7 @@ export default function EventComponent({ event }: EventCardProps) {
 					<img
 						src={event.image}
 						alt="Event"
-						className="rounded-lg w-full object-contain md:h-auto"
+						className="rounded-lg object-contain min-w-full"
 					/>
 				) : (
 					<></>
