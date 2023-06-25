@@ -1,27 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	query as queryF,
-	orderBy,
-	startAfter,
-	limit,
-	getCountFromServer,
-} from "firebase/firestore";
-
 import Loading from "./Loading";
 import EventComponent from "./EventComponent";
 import Event from "../types/EventInterface";
 import React from "react";
-import db from "../db";
+import { getEvents, getTotalEventCount } from "../dbServices";
 
 import Pagination from "./Pagination";
 
 function EventList() {
-	const [getEvents, setEvents] = useState<Array<Event>>([]);
+	const [events, setEvents] = useState<Array<Event>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [isEmpty, setIsEmpty] = useState<boolean>(false);
 	const [totalPages, setTotalPages] = useState<number>(1);
@@ -30,63 +18,43 @@ function EventList() {
 	let page = Number(pageNum);
 	const eventsPerPage: number = 20;
 
+	// Create state for page ends
+	const [pageEnds, setPageEnds] = useState<Map<number, any>>(new Map());
+
 	useEffect(() => {
 		const fetchEvents = async () => {
-			// by default, on load page is set equal to 1 so the page on load is the 1st page
-			// Redirect to page 1 if pageNum is not set
-
 			try {
+				// by default, on load page is set equal to 1 so the page on load is the 1st page
+				// Redirect to page 1 if pageNum is not set
 				if (!page) {
 					navigate("/page/1");
 					page = 1;
 				}
-				const eventsRef = collection(db, "events");
+
 				// Calculate the total number of pages const totalEvents = await getCountFromServer(eventsRef);
-				const totalEvents = await getCountFromServer(eventsRef);
-				const totalEventsCount = totalEvents.data().count;
+				const totalEventsCount = await getTotalEventCount();
 				setTotalPages(Math.ceil(totalEventsCount / eventsPerPage));
+				const eventsSnapshot = await getEvents(page, pageEnds, eventsPerPage);
 
-				let eventQuery;
-
-				if (page === 1) {
-					// For the first page, fetch the first 20 events
-					eventQuery = queryF(
-						eventsRef,
-						orderBy("dateTime"),
-						limit(eventsPerPage)
+				if (eventsSnapshot && !eventsSnapshot.empty) {
+					const lastVisible =
+						eventsSnapshot.docs[eventsSnapshot.docs.length - 1];
+					// Saves the last document snapshot in the map
+					setPageEnds((prevPageEnds) =>
+						new Map(prevPageEnds).set(page, lastVisible)
 					);
+					const eventsData: Event[] = [];
+					eventsSnapshot.forEach((doc: any) => {
+						const eventData: Event = doc.data() as Event;
+						eventsData.push(eventData);
+					});
+					setEvents(eventsData);
+				} else if ((!eventsSnapshot || eventsSnapshot.empty) && page > 1) {
+					navigate("/page/1");
+					return;
 				} else {
-					// The ?. operator short-circuits and returns undefined if pageEnds is undefined or null, preventing a TypeError from being thrown
-					// For subsequent pages, fetch the pageEnds from paginationSnapshots
-					const pageEndDocRef = doc(
-						db,
-						"paginationSnapshots",
-						`page${page - 1}`
-					);
-					const pageEndsSnapshot = await getDoc(pageEndDocRef);
-					// If there are no pageEnds, set isEmpty to true
-					if (!pageEndsSnapshot.exists) {
-						setIsEmpty(true);
-						setLoading(false);
-						return;
-					}
-					const pageEnds = pageEndsSnapshot.data();
-					eventQuery = queryF(
-						eventsRef,
-						orderBy("dateTime"),
-						startAfter(pageEnds?.endDocId),
-						limit(20)
-					);
+					setIsEmpty(true);
 				}
-
-				const eventsSnapshot = await getDocs(eventQuery);
-				const eventsData: Event[] = [];
-				eventsSnapshot.forEach((doc) => {
-					const eventData: Event = doc.data() as Event;
-					eventsData.push(eventData);
-				});
-				setEvents(eventsData);
-				setIsEmpty(eventsData.length === 0);
 			} catch (error) {
 				console.log(error);
 			} finally {
@@ -108,9 +76,7 @@ function EventList() {
 				) : isEmpty ? (
 					<p>No events found.</p>
 				) : (
-					getEvents.map((event) => (
-						<EventComponent key={event.id} event={event} />
-					))
+					events.map((event) => <EventComponent key={event.id} event={event} />)
 				)}
 			</div>
 			{!isEmpty && <Pagination currentPage={page} totalPages={totalPages} />}
