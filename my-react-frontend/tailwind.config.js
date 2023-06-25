@@ -13,6 +13,7 @@ export default {
 			},
 			fontFamily: {
 				sans: ["Helvetica", "Arial", "sans-serif"],
+				techMono: ["Share Tech Mono", "monospace"],
 			},
 		},
 	},

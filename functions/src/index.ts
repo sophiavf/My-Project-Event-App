@@ -16,6 +16,7 @@ import { scrapeEventbrite } from "./my-scraper/scrapers/ScrapeEventbrite";
 import { removeObsoleteEvents } from "./removeObsoleteEvents";
 
 import Event from "./types/Event";
+const eventsRef = adminDb.collection("events");
 
 const funcTimeout = 3600;
 const funcMemory = "2GiB"; //https://firebase.google.com/docs/reference/functions/2nd-gen/node/firebase-functions.md#memoryoption
@@ -51,4 +52,4 @@ exports.eventbriteScraper = onSchedule("every day 02:00", async () => {
 	logger.log("Event eventbrite data update finished");
 });
 
-export { meetupUrl, eventbriteUrl, adminDb };
+export { meetupUrl, eventbriteUrl, adminDb, eventsRef };

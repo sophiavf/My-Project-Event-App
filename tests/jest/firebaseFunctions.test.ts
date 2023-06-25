@@ -1,17 +1,13 @@
 import { adminDb } from "../../functions/src";
 import { expect, test } from "@jest/globals";
 import "jest";
-const eventsRef = adminDb.collection("events");
-import { Timestamp } from "firebase-admin/firestore";
+import { eventsRef } from "../../functions/src";
 import runScraper from "../../functions/src/my-scraper";
 import cleanupOldEvents from "../../functions/src/cleanupOldEvents";
-import { removeObsoleteEvents } from "../../functions/src/removeObsoleteEvents";
 import { eventbriteUrl, meetupUrl } from "../../functions/src";
 import { scrapeMeetup } from "../../functions/src/my-scraper/scrapers/ScrapeMeetup";
 import { scrapeEventbrite } from "../../functions/src/my-scraper/scrapers/ScrapeEventbrite";
 import updateDatabase from "../../functions/src/update";
-
-import mockEvents from "./mockEvents";
 
 test("runScraper with scrapeEventbrite", async () => {
 	const eEvents = await runScraper(eventbriteUrl, scrapeEventbrite);

@@ -1,5 +1,6 @@
 import Event from "../types/Event";
 import { adminDb } from "../firebaseAdmin";
+import { eventsRef } from "..";
 // removes events which are no longer found by the scrapers possible due to the organizer changing certain parameters which
 export async function removeObsoleteEvents(
 	platform: string,
@@ -7,7 +8,6 @@ export async function removeObsoleteEvents(
 ) {
 	try {
 		// Retrieve all existing events for the relevant event platform from Firebase
-		const eventsRef = adminDb.collection("events");
 		const snapshot = await eventsRef
 			.where("eventPlatform", "==", platform)
 			.get();
