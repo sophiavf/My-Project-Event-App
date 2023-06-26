@@ -54,7 +54,7 @@ export default function EventComponent({ event }: EventCardProps) {
 								className="text-blue-800 text-sm mt-2 font-semibold hover:text-blue-400"
 								onClick={() => setIsExpanded(!isExpanded)}
 							>
-								{isExpanded ? "Read Less" : "Read More"}
+								{isExpanded ? "Hide text" : "Expand text"}
 							</button>
 						)}
 					</div>
@@ -69,7 +69,7 @@ export default function EventComponent({ event }: EventCardProps) {
 						type="button"
 						className="px-4 py-2 text-neutral1 bg-primary rounded hover:bg-accent font-semibold"
 					>
-						Learn more
+						Learn More
 					</button>
 				</a>
 			</div>
