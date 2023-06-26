@@ -1,7 +1,7 @@
 import Event from "../types/EventInterface";
 import meetupLogo from "../assets/meetup-logo.png";
 import eventbriteLogo from "../assets/eventbrite-logo.png";
-import React from "react";
+import React, { useState } from "react";
 import { Timestamp } from "firebase-admin/firestore";
 interface EventCardProps {
 	event: Event;
@@ -25,9 +25,15 @@ function formatDate(dateData: Timestamp) {
 //https://www.typescriptlang.org/docs/handbook/jsx.html#basic-usage
 //Components have only one parameter which is the props object
 export default function EventComponent({ event }: EventCardProps) {
+	const [isExpanded, setIsExpanded] = useState(false);
+
+	const summaryMaxLength = 150;
+	const needsReadMore =
+		event.summary && event.summary.length > summaryMaxLength;
+
 	return (
-		<div className="flex md:flex-row items-center bg-neutral1 rounded m-5 p-5 max-w-3xl justify-between gap-2 flex-col shadow-md">
-			<div className="flex flex-col justify-between flex-wrap gap-2 place-self-stretch md:w-2/3">
+		<div className="flex flex-col md:flex-row items-start bg-neutral1 rounded m-5 p-5 max-w-3xl justify-between gap-2 shadow-md">
+			<div className="flex flex-col justify-between gap-2 md:w-2/3">
 				<div className="text-lg text-neutral2">{event.name}</div>
 				<div className="text-sm font-semibold">{event.organizer}</div>
 				<div className="text-secondary text-md font-medium">
@@ -35,35 +41,51 @@ export default function EventComponent({ event }: EventCardProps) {
 				</div>
 				<div className="text-sm">{event.location}</div>
 				{event.summary && (
-					<p className="text-neutral2 text-xs">{event.summary}</p>
+					<div className="relative">
+						<p
+							className={`text-neutral2 text-sm ${
+								needsReadMore && !isExpanded ? "line-clamp-3" : ""
+							}`}
+						>
+							{event.summary}
+						</p>
+						{needsReadMore && (
+							<button
+								className="text-blue-800 text-sm mt-2 font-semibold hover:text-blue-400"
+								onClick={() => setIsExpanded(!isExpanded)}
+							>
+								{isExpanded ? "Read Less" : "Read More"}
+							</button>
+						)}
+					</div>
 				)}
 				<a
 					href={event.eventLink}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="underline text-complementary"
+					className="underline text-complementary mt-auto"
 				>
 					<button
 						type="button"
-						className="px-4 py-2 mt-2 text-neutral1 bg-primary rounded hover:bg-accent font-semibold"
+						className="px-4 py-2 text-neutral1 bg-primary rounded hover:bg-accent font-semibold"
 					>
 						Learn more
 					</button>
 				</a>
 			</div>
 			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-full justify-around">
-				<div className="">
+				<div>
 					{event.eventPlatform === "Eventbrite" ? (
 						<img
 							title="eventbrite logo"
 							src={eventbriteLogo}
-							className="self-center justify-self-center w-full h-6 md:w-full md:h-22 object-contain"
+							className="self-center w-full h-6 md:w-full md:h-22 object-contain"
 						/>
 					) : (
 						<img
 							title="meetup logo"
 							src={meetupLogo}
-							className="self-center justify-self-center w-full h-12 md:w-full md:h-22 object-contain"
+							className="self-center w-full h-12 md:w-full md:h-22 object-contain"
 						/>
 					)}
 				</div>
@@ -71,7 +93,7 @@ export default function EventComponent({ event }: EventCardProps) {
 					<img
 						src={event.image}
 						alt="Event"
-						className="rounded-lg object-contain min-w-full"
+						className="rounded-lg object-contain w-full"
 					/>
 				) : (
 					<></>
