@@ -34,7 +34,7 @@ function extractID(url: string) {
 async function extractImageUrl(page: Page, id: number) {
 	//targets <img> elements that are descendants of <div> elements matching the ID number
 	const imageLocator = page.locator(`div[data-eventref='${id}'] img`);
-	let image = await imageLocator.getAttribute("src");
+	const image = await imageLocator.getAttribute("src");
 	return image;
 }
 
