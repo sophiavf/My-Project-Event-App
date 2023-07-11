@@ -17,8 +17,8 @@ export default function EventSummary() {
 	}, []);
 
 	return (
-		<div className="flex items-center flex-col pt-4 rounded-sm border-accent m-5">
-			<div className="grid grid-cols-2 gap-4 w-full max-w-3xl bg-neutral1 p-4 rounded-lg shadow-md justify-items-center">
+		<div className="flex items-center flex-col pt-4 rounded-sm border-accent">
+			<div className="grid grid-cols-2 gap-4 w-full md:max-w-3xl bg-neutral1 p-5 m-3 rounded-lg shadow-md justify-items-center">
 				<div className="flex items-center">
 					<img
 						title="meetup logo"

@@ -3,6 +3,8 @@ import meetupLogo from "../assets/meetup-logo.png";
 import eventbriteLogo from "../assets/eventbrite-logo.png";
 import React, { useState } from "react";
 import { Timestamp } from "firebase-admin/firestore";
+import { marked } from "marked";
+
 interface EventCardProps {
 	event: Event;
 }
@@ -31,23 +33,34 @@ export default function EventComponent({ event }: EventCardProps) {
 	const needsReadMore =
 		event.summary && event.summary.length > summaryMaxLength;
 
+	function formatSumary() {
+		if (event.eventPlatform === "Meetup" && event.summary) {
+			return (
+				<div dangerouslySetInnerHTML={{ __html: marked(event.summary) }}></div>
+			);
+		}
+	}
+
 	return (
-		<div className="flex flex-col md:flex-row  bg-neutral1 rounded m-3 p-5 md:max-w-3xl justify-between gap-2 shadow-md max-w-full">
+		<div className="flex flex-col md:flex-row bg-neutral1 rounded m-3 p-5 md:max-w-3xl justify-between gap-2 shadow-md w-full">
 			<div className="flex flex-col justify-between gap-2 md:w-2/3 max-w-full items-start">
 				<div className="text-lg text-neutral2">{event.name}</div>
 				<div className="text-sm font-semibold">{event.organizer}</div>
 				<div className="text-secondary text-md font-medium">
 					{formatDate(event.dateTime)}
 				</div>
-				<div className="text-sm break-words">{event.location}</div>
+				<div className="text-sm break-words">
+					<span className="font-semibold">Location: </span>
+					{event.location}
+				</div>
 				{event.summary && (
 					<div className="relative">
 						<p
 							className={`text-neutral2 text-sm ${
-								needsReadMore && !isExpanded ? "line-clamp-3" : ""
-							} break-words`}
+								needsReadMore && !isExpanded ? "line-clamp-5" : ""
+							} break-words overflow-wrap whitespace-break-spaces`}
 						>
-							{event.summary}
+							{formatSumary()}
 						</p>
 						{needsReadMore && (
 							<button
@@ -73,19 +86,19 @@ export default function EventComponent({ event }: EventCardProps) {
 					</button>
 				</a>
 			</div>
-			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-full ">
+			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-fit ">
 				<div>
 					{event.eventPlatform === "Eventbrite" ? (
 						<img
 							title="eventbrite logo"
 							src={eventbriteLogo}
-							className="self-center w-full h-6 md:w-full md:h-22 object-contain mx-auto max-w-full"
+							className="self-center w-fit h-6 md:h-22 object-contain mx-auto"
 						/>
 					) : (
 						<img
 							title="meetup logo"
 							src={meetupLogo}
-							className="self-center w-full h-12 md:w-full md:h-22 object-contain mx-auto max-w-full"
+							className="self-center w-fit h-12 md:h-22 object-contain mx-auto "
 						/>
 					)}
 				</div>
@@ -93,7 +106,7 @@ export default function EventComponent({ event }: EventCardProps) {
 					<img
 						src={event.image}
 						alt="Event"
-						className="rounded-lg w-full h-auto object-contain mx-auto"
+						className="rounded-lg w-fit h-auto object-contain mx-auto"
 					/>
 				) : (
 					<></>
