@@ -32,20 +32,20 @@ export default function EventComponent({ event }: EventCardProps) {
 		event.summary && event.summary.length > summaryMaxLength;
 
 	return (
-		<div className="flex flex-col md:flex-row items-start bg-neutral1 rounded m-5 p-5 max-w-3xl justify-between gap-2 shadow-md">
-			<div className="flex flex-col justify-between gap-2 md:w-2/3">
+		<div className="flex flex-col md:flex-row  bg-neutral1 rounded m-3 p-5 md:max-w-3xl justify-between gap-2 shadow-md max-w-full">
+			<div className="flex flex-col justify-between gap-2 md:w-2/3 max-w-full items-start">
 				<div className="text-lg text-neutral2">{event.name}</div>
 				<div className="text-sm font-semibold">{event.organizer}</div>
 				<div className="text-secondary text-md font-medium">
 					{formatDate(event.dateTime)}
 				</div>
-				<div className="text-sm">{event.location}</div>
+				<div className="text-sm break-words">{event.location}</div>
 				{event.summary && (
 					<div className="relative">
 						<p
 							className={`text-neutral2 text-sm ${
 								needsReadMore && !isExpanded ? "line-clamp-3" : ""
-							}`}
+							} break-words`}
 						>
 							{event.summary}
 						</p>
@@ -73,19 +73,19 @@ export default function EventComponent({ event }: EventCardProps) {
 					</button>
 				</a>
 			</div>
-			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-full justify-around">
+			<div className="flex flex-col md:w-1/3 gap-2 flex-wrap h-full ">
 				<div>
 					{event.eventPlatform === "Eventbrite" ? (
 						<img
 							title="eventbrite logo"
 							src={eventbriteLogo}
-							className="self-center w-full h-6 md:w-full md:h-22 object-contain"
+							className="self-center w-full h-6 md:w-full md:h-22 object-contain mx-auto max-w-full"
 						/>
 					) : (
 						<img
 							title="meetup logo"
 							src={meetupLogo}
-							className="self-center w-full h-12 md:w-full md:h-22 object-contain"
+							className="self-center w-full h-12 md:w-full md:h-22 object-contain mx-auto max-w-full"
 						/>
 					)}
 				</div>
@@ -93,7 +93,7 @@ export default function EventComponent({ event }: EventCardProps) {
 					<img
 						src={event.image}
 						alt="Event"
-						className="rounded-lg object-contain w-full"
+						className="rounded-lg w-full h-auto object-contain mx-auto"
 					/>
 				) : (
 					<></>

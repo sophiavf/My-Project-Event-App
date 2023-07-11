@@ -67,18 +67,16 @@ function EventList() {
 	}, [page]);
 
 	return (
-		<div className="flex flex-col items-center justify-between flex-1">
-			<div className="flex flex-col content-center">
-				{loading ? (
-					<div>
-						<Loading />
-					</div>
-				) : isEmpty ? (
-					<p>No events found.</p>
-				) : (
-					events.map((event) => <EventComponent key={event.id} event={event} />)
-				)}
-			</div>
+		<div className="flex flex-col items-center justify-between flex-1 max-w-full overflow-x-hidden">
+			{loading ? (
+				<div>
+					<Loading />
+				</div>
+			) : isEmpty ? (
+				<p>No events found.</p>
+			) : (
+				events.map((event) => <EventComponent key={event.id} event={event} />)
+			)}
 			{!isEmpty && <Pagination currentPage={page} totalPages={totalPages} />}
 		</div>
 	);

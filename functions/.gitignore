@@ -15,4 +15,5 @@ serviceAccountKey.json
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/.firebase
 
