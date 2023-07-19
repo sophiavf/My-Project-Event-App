@@ -38,6 +38,8 @@ export default function EventComponent({ event }: EventCardProps) {
 			return (
 				<div dangerouslySetInnerHTML={{ __html: marked(event.summary) }}></div>
 			);
+		} else {
+			return <div>{event.summary}</div>;
 		}
 	}
 
@@ -55,13 +57,13 @@ export default function EventComponent({ event }: EventCardProps) {
 				</div>
 				{event.summary && (
 					<div className="relative">
-						<p
+						<div
 							className={`text-neutral2 text-sm ${
 								needsReadMore && !isExpanded ? "line-clamp-5" : ""
 							} break-words overflow-wrap whitespace-break-spaces`}
 						>
 							{formatSumary()}
-						</p>
+						</div>
 						{needsReadMore && (
 							<button
 								className="text-blue-800 text-sm mt-2 font-semibold hover:text-blue-400"

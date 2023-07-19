@@ -67,7 +67,7 @@ function EventList() {
 	}, [page]);
 
 	return (
-		<div className="flex flex-col items-center justify-between flex-1 overflow-x-hidden">
+		<div className="flex flex-col items-center justify-between flex-1 overflow-x-hidden m-3">
 			{loading ? (
 				<div>
 					<Loading />
