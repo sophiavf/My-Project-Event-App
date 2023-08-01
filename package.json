@@ -467,7 +467,7 @@
     "widest-line": "^3.1.0",
     "winston": "^3.8.2",
     "winston-transport": "^4.5.0",
-    "word-wrap": "^1.2.3",
+    "word-wrap": "^1.2.4",
     "wrap-ansi": "^7.0.0",
     "wrappy": "^1.0.2",
     "write-file-atomic": "^3.0.3",
