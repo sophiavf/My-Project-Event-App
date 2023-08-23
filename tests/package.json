@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "babel.config.js",
-  "private": true, 
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +22,7 @@
     "firebase-admin": "^11.9.0",
     "firebase-functions": "^4.4.0",
     "playwright": "^1.34.3",
+    "playwright-core": "^1.37.1",
     "tsc": "^2.0.4",
     "typescript": "^5.0.4"
   }

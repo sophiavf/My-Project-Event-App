@@ -7,8 +7,8 @@ import { test, expect } from "@playwright/test";
 import playwright, { Page, BrowserContext, Browser } from "playwright-core";
 import { eventbriteUrl } from "../../functions/src/index";
 
-// Annotate entire file as serial.
-test.describe.configure({ mode: 'serial' });
+// // Annotate entire file as serial.
+// test.describe.configure({ mode: "serial" });
 
 //Import interfaces
 import Event from "../../functions/src/types/Event";
@@ -59,6 +59,9 @@ test("processEvents returns an array", () => {
 	console.log(typeof data);
 	const processedEvents = processEvents(data);
 	expect(Array.isArray(processedEvents)).toBe(true);
+	expect(processedEvents.length).toBeGreaterThan(0);
+	expect(processedEvents[0]).toHaveProperty("id");
+	expect(processedEvents[1].name).toBe("Business Event");
 });
 // Test for the scrapeEventbrite function
 test("scrapeEventbrite should return valid Event objects", async () => {
@@ -66,6 +69,10 @@ test("scrapeEventbrite should return valid Event objects", async () => {
 	for (const event of events) {
 		expect(event).toHaveProperty("id");
 		expect(event).toHaveProperty("name");
+		expect(event).toHaveProperty("eventLink");
+		expect(event).toHaveProperty("dateTime");
+		expect(event).toHaveProperty("location");
+		expect(event).toHaveProperty("image");
 	}
 });
 

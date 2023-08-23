@@ -90,4 +90,4 @@ async function scrapeMeetup(page: Page, url: string) {
 	}
 }
 
-export { scrapeMeetup, scrollToBottom };
+export { scrapeMeetup, scrollToBottom, extractID, extractImageUrl };

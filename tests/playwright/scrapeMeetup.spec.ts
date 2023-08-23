@@ -1,61 +1,98 @@
 import { test, expect } from "@playwright/test";
+import playwright, { Page, BrowserContext, Browser } from "playwright-core";
+//Import interfaces
+import Event from "../../functions/src/types/Event";
+
 import {
 	scrapeMeetup,
 	scrollToBottom,
+	extractID,
+	extractImageUrl,
 } from "../../functions/src/my-scraper/scrapers/ScrapeMeetup"; // replace with the actual file name
 
 import { meetupUrl } from "../../functions/src";
 
-import Event from "../../functions/src/types/Event";
+// shared test variables
+let browser: Browser, context: BrowserContext, page: Page;
 
-test.describe("Meetup event scraper", () => {
-	let events: Event[];
+let events: Event[];
 
-	// test.beforeAll(async ({ page }) => {
-	// 	test.setTimeout(2000000);
-	// 	events = await scrapeMeetup(page, meetupUrl);
-	// });
-	test("scrollToBottom function", async ({ page }) => {
-		// You can replace with an actual meetup page url
+test.beforeAll(async () => {
+	browser = await playwright.chromium.launch();
+});
 
-		await page.goto(meetupUrl);
-		await scrollToBottom(page);
+test.afterAll(async () => {
+	await browser.close();
+});
 
-		// This tests if the page has been scrolled to the bottom
-		const scrolledHeight = await page.evaluate(() => window.scrollY);
-		const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
+test.beforeEach(async () => {
+	context = await browser.newContext();
+	page = await context.newPage();
+});
 
-		expect(scrolledHeight).toEqual(bodyHeight - 720);
+test.afterEach(async () => {
+	await context.close();
+});
+
+test("scrollToBottom function", async () => {
+	// You can replace with an actual meetup page url
+
+	await page.goto(meetupUrl);
+	await scrollToBottom(page);
+
+	// This tests if the page has been scrolled to the bottom
+	const scrolledHeight = await page.evaluate(() => window.scrollY);
+	const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
+
+	expect(scrolledHeight).toEqual(bodyHeight - 720);
+});
+
+test("scrapeMeetup function returns an array with the required properties", async () => {
+	events = await scrapeMeetup(page, meetupUrl);
+	console.log(events);
+	console.log(events.length);
+	// Test if each event has the correct structure
+	events.forEach((event) => {
+		expect(event).toHaveProperty("id");
+		expect(event).toHaveProperty("name");
+		expect(event).toHaveProperty("eventLink");
+		expect(event).toHaveProperty("dateTime");
+		expect(event).toHaveProperty("location");
+		expect(event).toHaveProperty("image");
 	});
+});
+test("scrapeMeetup function returns an array containing atleast 1 event", async () => {
+	// Test if events is an array
+	expect(Array.isArray(events)).toBe(true);
+	expect(events.length).toBeGreaterThan(5);
+});
 
-	test("scrapeMeetup function returns an array with the required properties and no duplicates", async ({
-		page,
-	}) => {
-		test.setTimeout(190000);
-		// events = await scrapeMeetup(page, meetupUrl);
-		// You can replace with an actual meetup page url
-		events = await scrapeMeetup(page, meetupUrl);
-		console.log(events);
-		console.log(events.length);
+test("scrapeMeetup function returns an array with no duplicates", async () => {
+	const ids = events.map((event) => event.id);
+	const idsSet = new Set(ids);
 
-		// Test if events is an array
-		expect(Array.isArray(events)).toBe(true);
-		expect(events.length).toBeGreaterThan(5);
+	//This test will fail if there are any duplicate ids in the events array, as the size of the ids array will be larger than the size of the idsSet.
+	expect(ids.length).toBe(idsSet.size);
+});
 
-		// Test if each event has the correct structure
-		events.forEach((event) => {
-			expect(event).toHaveProperty("id");
-			expect(event).toHaveProperty("name");
-			expect(event).toHaveProperty("eventLink");
-			expect(event).toHaveProperty("dateTime");
-			expect(event).toHaveProperty("location");
-			expect(event).toHaveProperty("image");
-		});
+test("extractID returns a valid ID value", () => {
+	const url = "https://www.meetup.com/sgpython/events/277404359/";
+	const id = Number(extractID(url));
+	expect(id).toBe(277404359);
+});
 
-		const ids = events.map((event) => event.id);
-		const idsSet = new Set(ids);
+test("extractImageUrl returns a valid image url", async () => {
+	await page.goto(meetupUrl);
+	const sampleEvent = events[0];
+	const sampleImage = await extractImageUrl(page, sampleEvent.id);
+	const imageUrlBase = "https://secure.meetupstatic.com/photos/event/";
+	// Expect the processed event's image URL to contain the base URL and the event ID
+	if (sampleImage) {
+		const imageUrlContainsBaseAndId =
+			sampleImage.includes(imageUrlBase);
 
-		//This test will fail if there are any duplicate ids in the events array, as the size of the ids array will be larger than the size of the idsSet. because when you create a Set, it automatically removes duplicates, only storing unique values.
-		expect(ids.length).toBe(idsSet.size);
-	});
+		expect(imageUrlContainsBaseAndId).toBe(true);
+	} else {
+		console.error("Image URL is null");
+	}
 });
