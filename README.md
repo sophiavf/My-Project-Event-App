@@ -113,7 +113,7 @@ To get a local copy up and running follow these simple steps.
    ```
 2. Install NPM packages
    ```sh
-   cd my-react-frontend/
+   cd My-Project-Event-App/
    npm install
    ```
 3. Run the development server to start a local demo of the project
